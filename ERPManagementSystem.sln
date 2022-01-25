@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32106.194
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERPManagementSystem", "ERPManagementSystem\ERPManagementSystem.csproj", "{778DC440-AF3C-410A-A350-CB8F6B21AC21}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ERPDB", "ERPDB\ERPDB.sqlproj", "{A32D5781-DED3-46EE-AC8C-9F8D87AE5F82}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{778DC440-AF3C-410A-A350-CB8F6B21AC21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{778DC440-AF3C-410A-A350-CB8F6B21AC21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{778DC440-AF3C-410A-A350-CB8F6B21AC21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{778DC440-AF3C-410A-A350-CB8F6B21AC21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A32D5781-DED3-46EE-AC8C-9F8D87AE5F82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A32D5781-DED3-46EE-AC8C-9F8D87AE5F82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A32D5781-DED3-46EE-AC8C-9F8D87AE5F82}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{A32D5781-DED3-46EE-AC8C-9F8D87AE5F82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A32D5781-DED3-46EE-AC8C-9F8D87AE5F82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A32D5781-DED3-46EE-AC8C-9F8D87AE5F82}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8028312F-9528-4F77-8518-80EA241CF338}
+	EndGlobalSection
+EndGlobal
