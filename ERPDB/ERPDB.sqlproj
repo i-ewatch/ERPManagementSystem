@@ -57,4 +57,14 @@
   <ItemGroup>
     <Folder Include="Properties" />
   </ItemGroup>
+  <ItemGroup>
+    <Build Include="CompanySetting.sql" />
+    <Build Include="CustomerSetting.sql" />
+    <Build Include="EmployeeSetting.sql" />
+    <Build Include="ProductSetting.sql" />
+    <Build Include="ProductCategorySetting.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="ERPDB.refactorlog" />
+  </ItemGroup>
 </Project>
