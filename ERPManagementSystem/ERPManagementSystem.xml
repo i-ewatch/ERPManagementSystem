@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ERPManagementSystem</name>
+    </assembly>
+    <members>
+        <member name="M:ERPManagementSystem.Controllers.CompanyController.GetCompany">
+            <summary>
+            查詢全部廠商資訊
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ERPManagementSystem.Controllers.CompanyController.GetCompanyNumber(System.String)">
+            <summary>
+            廠商代碼查詢
+            </summary>
+            <param name="CompanyNumber"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ERPManagementSystem.Controllers.CompanyController.PostCompany(ERPManagementSystem.Modules.CompanySetting)">
+            <summary>
+            廠商資訊新增
+            </summary>
+            <param name="companySetting">公司資訊物件</param>
+            <returns></returns>
+        </member>
+        <member name="M:ERPManagementSystem.Controllers.CompanyController.PostCompanyAttachmentFile(System.String,System.String,Microsoft.AspNetCore.Http.IFormFile,System.String)">
+            <summary>
+            廠商附件檔案更新
+            </summary>
+            <param name="CompanyNumber">公司編碼</param>
+            <param name="CompanyName">公司名稱</param>
+            <param name="AttachmentFile">附件檔案</param>
+            <param name="FileExtension">副檔名</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

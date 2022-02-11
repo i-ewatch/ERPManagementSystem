@@ -9,7 +9,5 @@
     [FootPrint] NVARCHAR(50) NOT NULL, 
     [Remark] NVARCHAR(50) NULL, 
     [Explanation] NVARCHAR(50) NULL, 
-    [AttachmentFile] VARBINARY(MAX) NULL, 
-    [FileExtension] NVARCHAR(5) NULL, 
     PRIMARY KEY ([ProductNumber])
 )

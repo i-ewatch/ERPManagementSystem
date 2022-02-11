@@ -10,8 +10,6 @@
     [ContactEmail] NVARCHAR(50) NOT NULL,
     [ContactPhone] NVARCHAR(11) NOT NULL,
     [CheckoutType] INT NOT NULL,
-    [Remark] NVARCHAR(50) NULL,
-    [AttachmentFile] VARBINARY(MAX) NULL,
-    [FileExtension] NVARCHAR(5) NULL,
+    [Remark] NVARCHAR(50) NULL DEFAULT '',
     PRIMARY KEY ([CompanyNumber]),
 )
