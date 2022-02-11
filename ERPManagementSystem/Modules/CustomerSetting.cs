@@ -11,11 +11,13 @@ namespace ERPManagementSystem.Modules
         public string CustomerName { get; set; }
         public string UniformNumbers { get; set; }
         public string RemittanceAccount { get; set; }
+        public string Phone { get; set; }
+        public string Fax { get; set; }
         public string ContactName { get; set; }
         public string ContactEmail { get; set; }
         public string ContactPhone { get; set; }
         public int CheckoutType { get; set; }
-        public byte[] AttachmentFile { get; set; }
-        public string FileExtension { get; set; }
+        //public byte[] AttachmentFile { get; set; }
+        //public string FileExtension { get; set; }
     }
 }

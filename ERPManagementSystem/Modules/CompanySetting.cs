@@ -18,7 +18,7 @@ namespace ERPManagementSystem.Modules
         public string ContactPhone { get; set; }
         public int CheckoutType { get; set; }
         public string Remark { get; set; } = null;
-        public byte[] AttachmentFile { get; set; } = null;
-        public string FileExtension { get; set; } = null;
+        //public byte[] AttachmentFile { get; set; } = null;
+        //public string FileExtension { get; set; } = null;
     }
 }
