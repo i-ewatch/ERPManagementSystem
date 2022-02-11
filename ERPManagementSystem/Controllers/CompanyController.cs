@@ -23,7 +23,7 @@ namespace ERPManagementSystem.Controllers
         public CompanyController(IConfiguration configuration)
         {
             _configuration = configuration;
-            WorkPath = _configuration["WorkPath"]+ "廠商";
+            WorkPath = "廠商";
             SqlDB = _configuration["SqlDB"];
             CompanyLog = _configuration["CompanyLog"];
         }
@@ -181,7 +181,7 @@ namespace ERPManagementSystem.Controllers
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
                         string sql = $"UPDATE {CompanyLog} SET FileName = N'{AttachmentFile.FileName}' WHERE CompanyNumber = N'{CompanyNumber}' AND CompanyName = N'{CompanyName}'";
-                         connection.Execute(sql);
+                        connection.Execute(sql);
                     }
                     return Ok($"{CompanyName}檔案上傳成功");
                 }

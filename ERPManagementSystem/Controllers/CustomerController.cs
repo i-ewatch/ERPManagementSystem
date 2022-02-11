@@ -23,7 +23,7 @@ namespace ERPManagementSystem.Controllers
         public CustomerController(IConfiguration configuration)
         {
             _configuration = configuration;
-            WorkPath = _configuration["WorkPath"] + "客戶";
+            WorkPath = "客戶";
             SqlDB = _configuration["SqlDB"];
             CustomerLog = _configuration["CustomerLog"];
         }

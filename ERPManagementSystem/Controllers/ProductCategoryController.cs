@@ -36,7 +36,7 @@ namespace ERPManagementSystem.Controllers
             {
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"SELECT * FROM  {ProductCategoryLog} order by ProductCategoryNumber ";
+                    string sql = $"SELECT * FROM  {ProductCategoryLog} order by CategoryNumber ";
                     productCategorySettings = connection.Query<ProductCategorySetting>(sql).ToList();
                 }
                 return productCategorySettings;
@@ -50,7 +50,7 @@ namespace ERPManagementSystem.Controllers
         /// <summary>
         /// 產品類別資訊新增
         /// </summary>
-        /// <param name="productCategorySetting">公司資訊物件</param>
+        /// <param name="productCategorySetting">產品類別資訊物件</param>
         /// <returns></returns>
         [HttpPost]
         [Route("/api/InserterProductCategory")]
@@ -58,13 +58,34 @@ namespace ERPManagementSystem.Controllers
         {
             try
             {
+                List<ProductCategorySetting> productCategorySettings = new List<ProductCategorySetting>();
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"INSERT INTO {ProductCategoryLog}(CategoryNumber , CategoryName) VALUES " +
-                        $"(N'{productCategorySetting.CategoryNumber}',N'{productCategorySetting.CategoryName}')";
-                    connection.Execute(sql);
+                    string sql = $"SELECT * FROM  {ProductCategoryLog} WHERE CategoryNumber = N'{productCategorySetting.CategoryNumber}'";
+                    productCategorySettings = connection.Query<ProductCategorySetting>(sql).ToList();
                 }
-                return Ok($"{productCategorySetting.CategoryName}資訊，上傳成功!");
+                if (productCategorySettings.Count == 0)
+                {
+                    int DateIndex = 0;
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"INSERT INTO {ProductCategoryLog}(CategoryNumber , CategoryName) VALUES " +
+                            $"(N'{productCategorySetting.CategoryNumber}',N'{productCategorySetting.CategoryName}')";
+                        DateIndex = connection.Execute(sql);
+                    }
+                    if (DateIndex > 0)
+                    {
+                        return Ok($"{productCategorySetting.CategoryName}資訊，上傳成功!");
+                    }
+                    else
+                    {
+                        return BadRequest($"{productCategorySetting.CategoryName}資訊，上傳失敗");
+                    }
+                }
+                else
+                {
+                    return BadRequest($"{productCategorySetting.CategoryName}資訊，編碼已存在");
+                }
             }
             catch (Exception)
             {
@@ -76,7 +97,7 @@ namespace ERPManagementSystem.Controllers
         /// <summary>
         /// 產品類別資訊更新
         /// </summary>
-        /// <param name="productCategorySetting">廠商資訊物件</param>
+        /// <param name="productCategorySetting">產品類別資訊物件</param>
         /// <returns></returns>
         [HttpPost]
         [Route("/api/UpdateProductCategory")]
@@ -88,7 +109,7 @@ namespace ERPManagementSystem.Controllers
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
                     string sql = $"UPDATE {ProductCategoryLog} SET CategoryName = N'{productCategorySetting.CategoryName}' " +
-                        $" WHERE ProductCategoryNumber = N'{productCategorySetting.CategoryNumber}'";
+                        $" WHERE CategoryNumber = N'{productCategorySetting.CategoryNumber}'";
                     DateIndex = connection.Execute(sql);
                 }
                 if (DateIndex > 0)

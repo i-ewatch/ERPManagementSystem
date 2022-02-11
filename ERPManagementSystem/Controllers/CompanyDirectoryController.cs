@@ -23,7 +23,7 @@ namespace ERPManagementSystem.Controllers
         public CompanyDirectoryController(IConfiguration configuration)
         {
             _configuration = configuration;
-            WorkPath = _configuration["WorkPath"] + "廠商";
+            WorkPath = "廠商";
             SqlDB = _configuration["SqlDB"];
             CompanyDirectoryLog = _configuration["CompanyDirectoryLog"];
         }

@@ -24,7 +24,7 @@ namespace ERPManagementSystem.Controllers
         public CustomerDirectoryController(IConfiguration configuration)
         {
             _configuration = configuration;
-            WorkPath = _configuration["WorkPath"] + "客戶";
+            WorkPath = "客戶";
             SqlDB = _configuration["SqlDB"];
             CustomerDirectoryLog = _configuration["CustomerDirectoryLog"];
         }
