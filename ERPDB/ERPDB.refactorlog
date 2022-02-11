@@ -63,4 +63,46 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="CategoryNumber" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="67cfe1bd-5c68-4d5b-bfaa-7c4f3fbec797" ChangeDateTime="02/11/2022 05:58:02">
+    <Property Name="ElementName" Value="[dbo].[CompanyDirectorySetting].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[CompanyDirectorySetting]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="DirectoryCompany" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ba5e1333-78d6-4009-be38-b12218a89beb" ChangeDateTime="02/11/2022 06:46:53">
+    <Property Name="ElementName" Value="[dbo].[CompanyDirectorySetting].[FileExtension]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[CompanyDirectorySetting]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FileName" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e288fa34-3698-45ee-b722-5a0c8e24162f" ChangeDateTime="02/11/2022 06:47:04">
+    <Property Name="ElementName" Value="[dbo].[CompanySetting].[FileExtension]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[CompanySetting]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FileName" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="99cbd147-fdbe-4cb7-97fa-ef59b814b3eb" ChangeDateTime="02/11/2022 06:47:16">
+    <Property Name="ElementName" Value="[dbo].[CustomerDirectorySetting].[FileExtension]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[CustomerDirectorySetting]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FileName" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="541808c8-f611-4ce6-a208-00addbda256b" ChangeDateTime="02/11/2022 06:47:33">
+    <Property Name="ElementName" Value="[dbo].[CustomerSetting].[FileExtension]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[CustomerSetting]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FileName" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="573fb2c7-0d87-43fc-9718-1705fd7ae57b" ChangeDateTime="02/11/2022 06:47:50">
+    <Property Name="ElementName" Value="[dbo].[ProductSetting].[FileExtension]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ProductSetting]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FileName" />
+  </Operation>
 </Operations>

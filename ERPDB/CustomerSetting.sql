@@ -10,5 +10,7 @@
     [ContactEmail] NVARCHAR(50) NOT NULL, 
     [ContactPhone] NVARCHAR(11) NOT NULL, 
     [CheckoutType] INT NOT NULL, 
+    [AttachmentFile] VARBINARY(MAX) NULL, 
+    [FileName] NVARCHAR(50) NULL, 
     PRIMARY KEY ([CustomerNumber])
 )

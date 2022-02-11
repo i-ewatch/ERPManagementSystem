@@ -63,6 +63,8 @@
     <Build Include="EmployeeSetting.sql" />
     <Build Include="ProductSetting.sql" />
     <Build Include="ProductCategorySetting.sql" />
+    <Build Include="CompanyDirectorySetting.sql" />
+    <Build Include="CustomerDirectorySetting.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="ERPDB.refactorlog" />

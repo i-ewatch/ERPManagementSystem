@@ -9,7 +9,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ERPManagementSystem.Controllers
 {
@@ -85,17 +84,30 @@ namespace ERPManagementSystem.Controllers
         {
             try
             {
-                int DateIndex = 0;
+                List<CustomerSetting> customerSettings = new List<CustomerSetting>();
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"INSERT INTO {CustomerLog}(CustomerNumber,CustomerName,UniformNumbers,Phone,Fax,RemittanceAccount,ContactName,ContactEmail,ContactPhone,CheckoutType) VALUES " +
-                        $"(N'{customerSetting.CustomerNumber}',N'{customerSetting.CustomerName}',N'{customerSetting.UniformNumbers}',N'{customerSetting.Phone}',N'{customerSetting.Fax}',N'{customerSetting.RemittanceAccount}',N'{customerSetting.ContactName}',N'{customerSetting.ContactEmail}'" +
-                        $",N'{customerSetting.ContactPhone}',{customerSetting.CheckoutType})";
-                    DateIndex = connection.Execute(sql);
+                    string sql = $"SELECT * FROM  {CustomerLog} WHERE CustomerNumber = N'{customerSetting.CustomerNumber}'";
+                    customerSettings = connection.Query<CustomerSetting>(sql).ToList();
                 }
-                if (DateIndex > 0)
+                if (customerSettings.Count == 0)
                 {
-                    return Ok($"{customerSetting.CustomerName}資訊，上傳成功!");
+                    int DateIndex = 0;
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"INSERT INTO {CustomerLog}(CustomerNumber,CustomerName,UniformNumbers,Phone,Fax,RemittanceAccount,ContactName,ContactEmail,ContactPhone,CheckoutType) VALUES " +
+                            $"(N'{customerSetting.CustomerNumber}',N'{customerSetting.CustomerName}',N'{customerSetting.UniformNumbers}',N'{customerSetting.Phone}',N'{customerSetting.Fax}',N'{customerSetting.RemittanceAccount}',N'{customerSetting.ContactName}',N'{customerSetting.ContactEmail}'" +
+                            $",N'{customerSetting.ContactPhone}',{customerSetting.CheckoutType})";
+                        DateIndex = connection.Execute(sql);
+                    }
+                    if (DateIndex > 0)
+                    {
+                        return Ok($"{customerSetting.CustomerName}資訊，上傳成功!");
+                    }
+                    else
+                    {
+                        return BadRequest($"{customerSetting.CustomerName}資訊，上傳失敗");
+                    }
                 }
                 else
                 {
@@ -105,7 +117,7 @@ namespace ERPManagementSystem.Controllers
             catch (Exception)
             {
 
-                return BadRequest($"{customerSetting.CustomerName}資訊，上傳失敗");
+                return BadRequest($"{customerSetting.CustomerName}資訊，編碼已存在");
             }
         }
         /// <summary>
@@ -147,7 +159,6 @@ namespace ERPManagementSystem.Controllers
         /// <param name="CustomerNumber">廠商編碼</param>
         /// <param name="CustomerName">廠商名稱</param>
         /// <param name="AttachmentFile">附件檔案</param>
-        /// <param name="FileExtension">副檔名</param>
         /// <returns></returns>
         [HttpPost]
         [Route("/api/UpdateCustomerAttachmentFile")]
@@ -157,7 +168,7 @@ namespace ERPManagementSystem.Controllers
             {
                 if (AttachmentFile != null && !string.IsNullOrEmpty(CustomerNumber) && !string.IsNullOrEmpty(CustomerName))
                 {
-                    WorkPath += $"\\{CustomerNumber}{CustomerName}";
+                    WorkPath += $"\\{CustomerNumber}";
                     if (!Directory.Exists(WorkPath))
                     {
                         Directory.CreateDirectory($"{WorkPath}");
@@ -166,6 +177,11 @@ namespace ERPManagementSystem.Controllers
                     using (var stream = new FileStream(WorkPath, FileMode.Create))
                     {
                         AttachmentFile.CopyToAsync(stream);
+                    }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"UPDATE {CustomerLog} SET FileName = N'{AttachmentFile.FileName}' WHERE CustomerNumber = N'{CustomerNumber}' AND CustomerName = N'{CustomerName}'";
+                        connection.Execute(sql);
                     }
                     return Ok($"{CustomerName}檔案上傳成功");
                 }

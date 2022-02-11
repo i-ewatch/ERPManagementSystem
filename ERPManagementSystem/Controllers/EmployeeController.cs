@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using ERPManagementSystem.Modules;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -8,7 +7,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ERPManagementSystem.Controllers
 {
@@ -61,7 +59,7 @@ namespace ERPManagementSystem.Controllers
             {
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"SELECT * FROM  {EmployeeLog} WHERE CustomerNumber = N'{EmployeeNumber}'";
+                    string sql = $"SELECT * FROM  {EmployeeLog} WHERE EmployeeNumber = N'{EmployeeNumber}'";
                     employeeSettings = connection.Query<EmployeeSetting>(sql).ToList();
                 }
                 return employeeSettings;
@@ -82,20 +80,33 @@ namespace ERPManagementSystem.Controllers
         {
             try
             {
-                int DateIndex = 0;
+                List<EmployeeSetting> employeeSettings = new List<EmployeeSetting>();
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"INSERT INTO {EmployeeLog}(EmployeeNumber,EmployeeName,Phone,Address,Token) VALUES " +
-                        $"(N'{employeeSetting.EmployeeNumber}',N'{employeeSetting.EmployeeName}',N'{employeeSetting.Phone}',N'{employeeSetting.Address}',{employeeSetting.Token})";
-                    DateIndex = connection.Execute(sql);
+                    string sql = $"SELECT * FROM  {EmployeeLog} WHERE EmployeeNumber = N'{employeeSetting.EmployeeNumber}'";
+                    employeeSettings = connection.Query<EmployeeSetting>(sql).ToList();
                 }
-                if (DateIndex > 0)
+                if (employeeSettings.Count == 0)
                 {
-                    return Ok($"{employeeSetting.EmployeeName}資訊，上傳成功!");
+                    int DateIndex = 0;
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"INSERT INTO {EmployeeLog}(EmployeeNumber,EmployeeName,Phone,Address,Token) VALUES " +
+                            $"(N'{employeeSetting.EmployeeNumber}',N'{employeeSetting.EmployeeName}',N'{employeeSetting.Phone}',N'{employeeSetting.Address}',{employeeSetting.Token})";
+                        DateIndex = connection.Execute(sql);
+                    }
+                    if (DateIndex > 0)
+                    {
+                        return Ok($"{employeeSetting.EmployeeName}資訊，上傳成功!");
+                    }
+                    else
+                    {
+                        return BadRequest($"{employeeSetting.EmployeeName}資訊，上傳失敗");
+                    }
                 }
                 else
                 {
-                    return BadRequest($"{employeeSetting.EmployeeName}資訊，上傳失敗");
+                    return BadRequest($"{employeeSetting.EmployeeName}資訊，編碼已存在");
                 }
             }
             catch (Exception)

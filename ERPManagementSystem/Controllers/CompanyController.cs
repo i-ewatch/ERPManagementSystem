@@ -9,7 +9,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ERPManagementSystem.Controllers
 {
@@ -85,21 +84,34 @@ namespace ERPManagementSystem.Controllers
         {
             try
             {
-                int DateIndex = 0;
+                List<CompanySetting> companySettings = new List<CompanySetting>();
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"INSERT INTO {CompanyLog}(CompanyNumber,CompanyName,CompanyShortName,UniformNumbers,Phone,Fax,ContactName,ContactEmail,ContactPhone,CheckoutType,Remark) VALUES " +
-                        $"(N'{companySetting.CompanyNumber}',N'{companySetting.CompanyName}',N'{companySetting.CompanyShortName}',N'{companySetting.UniformNumbers}',N'{companySetting.Phone}',N'{companySetting.Fax}',N'{companySetting.ContactName}',N'{companySetting.ContactEmail}'" +
-                        $",N'{companySetting.ContactPhone}',{companySetting.CheckoutType},N'{companySetting.Remark}')";
-                    DateIndex = connection.Execute(sql);
+                    string sql = $"SELECT * FROM  {CompanyLog} WHERE CompanyNumber = N'{companySetting.CompanyNumber}'";
+                    companySettings = connection.Query<CompanySetting>(sql).ToList();
                 }
-                if (DateIndex > 0)
+                if (companySettings.Count == 0)
                 {
-                    return Ok($"{companySetting.CompanyName}資訊，上傳成功!");
+                    int DateIndex = 0;
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"INSERT INTO {CompanyLog}(CompanyNumber,CompanyName,CompanyShortName,UniformNumbers,Phone,Fax,RemittanceAccount,ContactName,ContactEmail,ContactPhone,CheckoutType,Remark) VALUES " +
+                            $"(N'{companySetting.CompanyNumber}',N'{companySetting.CompanyName}',N'{companySetting.CompanyShortName}',N'{companySetting.UniformNumbers}',N'{companySetting.Phone}',N'{companySetting.Fax}',N'{companySetting.RemittanceAccount}',N'{companySetting.ContactName}',N'{companySetting.ContactEmail}'" +
+                            $",N'{companySetting.ContactPhone}',{companySetting.CheckoutType},N'{companySetting.Remark}')";
+                        DateIndex = connection.Execute(sql);
+                    }
+                    if (DateIndex > 0)
+                    {
+                        return Ok($"{companySetting.CompanyName}資訊，上傳成功!");
+                    }
+                    else
+                    {
+                        return BadRequest($"{companySetting.CompanyName}資訊，上傳失敗");
+                    }
                 }
                 else
                 {
-                    return BadRequest($"{companySetting.CompanyName}資訊，上傳失敗");
+                    return BadRequest($"{companySetting.CompanyName}資訊，編碼已存在");
                 }
             }
             catch (Exception)
@@ -122,7 +134,7 @@ namespace ERPManagementSystem.Controllers
                 int DateIndex = 0;
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"UPDATE {CompanyLog} SET CompanyName = N'{companySetting.CompanyName}',CompanyShortName = N'{companySetting.CompanyShortName}',UniformNumbers = N'{companySetting.UniformNumbers}',Phone = N'{companySetting.Phone}',Fax = N'{companySetting.Fax}'," +
+                    string sql = $"UPDATE {CompanyLog} SET CompanyName = N'{companySetting.CompanyName}',CompanyShortName = N'{companySetting.CompanyShortName}',UniformNumbers = N'{companySetting.UniformNumbers}',Phone = N'{companySetting.Phone}',Fax = N'{companySetting.Fax}',RemittanceAccount = N'{companySetting.RemittanceAccount}'," +
                         $"ContactName = N'{companySetting.ContactName}',ContactEmail = N'{companySetting.ContactEmail}',ContactPhone = N'{companySetting.ContactPhone}',CheckoutType = {companySetting.CheckoutType},Remark = N'{companySetting.Remark}'" +
                         $" WHERE CompanyNumber = N'{companySetting.CompanyNumber}'";
                     DateIndex = connection.Execute(sql);
@@ -147,7 +159,6 @@ namespace ERPManagementSystem.Controllers
         /// <param name="CompanyNumber">廠商編碼</param>
         /// <param name="CompanyName">廠商名稱</param>
         /// <param name="AttachmentFile">附件檔案</param>
-        /// <param name="FileExtension">副檔名</param>
         /// <returns></returns>
         [HttpPost]
         [Route("/api/UpdateCompanyAttachmentFile")]
@@ -157,7 +168,7 @@ namespace ERPManagementSystem.Controllers
             {
                 if (AttachmentFile != null && !string.IsNullOrEmpty(CompanyNumber) && !string.IsNullOrEmpty(CompanyName))
                 {
-                    WorkPath += $"\\{CompanyNumber}{CompanyName}";
+                    WorkPath += $"\\{CompanyNumber}";
                     if (!Directory.Exists(WorkPath))
                     {
                         Directory.CreateDirectory($"{WorkPath}");
@@ -166,6 +177,11 @@ namespace ERPManagementSystem.Controllers
                     using (var stream = new FileStream(WorkPath, FileMode.Create))
                     {
                         AttachmentFile.CopyToAsync(stream);
+                    }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"UPDATE {CompanyLog} SET FileName = N'{AttachmentFile.FileName}' WHERE CompanyNumber = N'{CompanyNumber}' AND CompanyName = N'{CompanyName}'";
+                         connection.Execute(sql);
                     }
                     return Ok($"{CompanyName}檔案上傳成功");
                 }
