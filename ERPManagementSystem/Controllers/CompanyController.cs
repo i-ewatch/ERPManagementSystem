@@ -79,7 +79,6 @@ namespace ERPManagementSystem.Controllers
         /// <param name="companySetting">廠商資訊物件</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/api/InserterCompany")]
         public IActionResult InserterCompany(CompanySetting companySetting)
         {
             try
@@ -125,8 +124,7 @@ namespace ERPManagementSystem.Controllers
         /// </summary>
         /// <param name="companySetting">廠商資訊物件</param>
         /// <returns></returns>
-        [HttpPost]
-        [Route("/api/UpdateCompany")]
+        [HttpPut]
         public IActionResult UpdateCompany(CompanySetting companySetting)
         {
             try
@@ -161,7 +159,7 @@ namespace ERPManagementSystem.Controllers
         /// <param name="AttachmentFile">附件檔案</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/api/UpdateCompanyAttachmentFile")]
+        [Route("/api/CompanyAttachmentFile")]
         public IActionResult PostCompanyAttachmentFile(string CompanyNumber, string CompanyName, IFormFile AttachmentFile)
         {
             try

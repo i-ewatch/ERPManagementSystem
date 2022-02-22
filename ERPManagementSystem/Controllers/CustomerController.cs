@@ -79,7 +79,6 @@ namespace ERPManagementSystem.Controllers
         /// <param name="customerSetting">客戶資訊物件</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/api/InserterCustomer")]
         public IActionResult InserterCustomer(CustomerSetting customerSetting)
         {
             try
@@ -125,8 +124,7 @@ namespace ERPManagementSystem.Controllers
         /// </summary>
         /// <param name="customerSetting">客戶資訊物件</param>
         /// <returns></returns>
-        [HttpPost]
-        [Route("/api/UpdateCustomer")]
+        [HttpPut]
         public IActionResult UpdateCustomer(CustomerSetting customerSetting)
         {
             try
@@ -161,7 +159,7 @@ namespace ERPManagementSystem.Controllers
         /// <param name="AttachmentFile">附件檔案</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/api/UpdateCustomerAttachmentFile")]
+        [Route("/api/CustomerAttachmentFile")]
         public IActionResult PostCompanyAttachmentFile(string CustomerNumber, string CustomerName, IFormFile AttachmentFile)
         {
             try

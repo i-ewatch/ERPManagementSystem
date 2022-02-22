@@ -104,7 +104,6 @@ namespace ERPManagementSystem.Controllers
         /// <param name="customerDirectorySetting">客戶通訊錄資訊物件</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/api/InserterCustomerDirectory")]
         public IActionResult InserterCustomerDirectory(CustomerDirectorySetting customerDirectorySetting)
         {
             try
@@ -148,8 +147,7 @@ namespace ERPManagementSystem.Controllers
         /// </summary>
         /// <param name="customerDirectorySetting">客戶通訊錄資訊物件</param>
         /// <returns></returns>
-        [HttpPost]
-        [Route("/api/UpdateCustomerDirectory")]
+        [HttpPut]
         public IActionResult UpdateCustomerDirectory(CustomerDirectorySetting customerDirectorySetting)
         {
             try
@@ -183,7 +181,7 @@ namespace ERPManagementSystem.Controllers
         /// <param name="AttachmentFile">附件檔案</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/api/UpdateCustomerDirectoryAttachmentFile")]
+        [Route("/api/CustomerDirectoryAttachmentFile")]
         public IActionResult PostCustomerDirectoryAttachmentFile(string DirectoryCustomer, string DirectoryNumber, IFormFile AttachmentFile)
         {
             try

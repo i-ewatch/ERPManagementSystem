@@ -75,7 +75,6 @@ namespace ERPManagementSystem.Controllers
         /// <param name="employeeSetting">員工資訊物件</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/api/InserterEmployee")]
         public IActionResult InserterEmployee(EmployeeSetting employeeSetting)
         {
             try
@@ -120,8 +119,7 @@ namespace ERPManagementSystem.Controllers
         /// </summary>
         /// <param name="employeeSetting">員工資訊物件</param>
         /// <returns></returns>
-        [HttpPost]
-        [Route("/api/UpdateEmployee")]
+        [HttpPut]
         public IActionResult UpdateEmployee(EmployeeSetting employeeSetting)
         {
             try

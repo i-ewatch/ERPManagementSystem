@@ -53,7 +53,6 @@ namespace ERPManagementSystem.Controllers
         /// <param name="productCategorySetting">產品類別資訊物件</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/api/InserterProductCategory")]
         public IActionResult PostProduct(ProductCategorySetting productCategorySetting)
         {
             try
@@ -99,8 +98,7 @@ namespace ERPManagementSystem.Controllers
         /// </summary>
         /// <param name="productCategorySetting">產品類別資訊物件</param>
         /// <returns></returns>
-        [HttpPost]
-        [Route("/api/UpdateProductCategory")]
+        [HttpPut]
         public IActionResult UpdateProductCategory(ProductCategorySetting productCategorySetting)
         {
             try

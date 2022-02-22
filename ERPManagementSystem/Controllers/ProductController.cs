@@ -106,7 +106,6 @@ namespace ERPManagementSystem.Controllers
         /// <param name="productSetting">產品資訊物件</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/api/InserterProduct")]
         public IActionResult PostProduct(ProductSetting productSetting)
         {
             try
@@ -152,8 +151,7 @@ namespace ERPManagementSystem.Controllers
         /// </summary>
         /// <param name="productSetting">產品資訊物件</param>
         /// <returns></returns>
-        [HttpPost]
-        [Route("/api/UpdateProduct")]
+        [HttpPut]
         public IActionResult UpdateProduct(ProductSetting productSetting)
         {
             try
@@ -188,7 +186,7 @@ namespace ERPManagementSystem.Controllers
         /// <param name="AttachmentFile">附件檔案</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/api/UpdateProductAttachmentFile")]
+        [Route("/api/ProductAttachmentFile")]
         public IActionResult PostProductAttachmentFile(string ProductNumber, string ProductName, IFormFile AttachmentFile)
         {
             try
