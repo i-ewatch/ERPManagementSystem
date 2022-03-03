@@ -65,6 +65,10 @@
     <Build Include="ProductCategorySetting.sql" />
     <Build Include="CompanyDirectorySetting.sql" />
     <Build Include="CustomerDirectorySetting.sql" />
+    <Build Include="PurchaseMainSetting.sql" />
+    <Build Include="PurchaseSubSetting.sql" />
+    <Build Include="SaleMainSetting.sql" />
+    <Build Include="SalesSubSetting.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="ERPDB.refactorlog" />

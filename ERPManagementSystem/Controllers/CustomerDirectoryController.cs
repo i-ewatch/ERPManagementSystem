@@ -64,8 +64,8 @@ namespace ERPManagementSystem.Controllers
             {
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"SELECT * FROM  {CustomerDirectoryLog} WHERE DirectoryNumber = N'{CustomerDirectoryNumber}'";
-                    customerDirectorySettings = connection.Query<CustomerDirectorySetting>(sql).ToList();
+                    string sql = $"SELECT * FROM  {CustomerDirectoryLog} WHERE DirectoryNumber = @CustomerDirectoryNumber";
+                    customerDirectorySettings = connection.Query<CustomerDirectorySetting>(sql, new { CustomerDirectoryNumber = CustomerDirectoryNumber }).ToList();
                 }
                 return customerDirectorySettings;
             }
@@ -80,7 +80,7 @@ namespace ERPManagementSystem.Controllers
         /// <param name="DirectoryCustomerNumber"> 客戶編碼</param>
         /// <returns></returns>
         [HttpGet]
-        [Route("/api/DirectoryCustomer/{DirectoryCompanyNumber}")]
+        [Route("/api/DirectoryCustomer/{DirectoryCustomerNumber}")]
         public List<CustomerDirectorySetting> GetCompanyNumber(string DirectoryCustomerNumber)
         {
             List<CustomerDirectorySetting> companyDirectorySettings = new List<CustomerDirectorySetting>();
@@ -88,8 +88,8 @@ namespace ERPManagementSystem.Controllers
             {
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"SELECT * FROM  {CustomerDirectoryLog} WHERE DirectoryCustomer = N'{DirectoryCustomerNumber}'";
-                    companyDirectorySettings = connection.Query<CustomerDirectorySetting>(sql).ToList();
+                    string sql = $"SELECT * FROM  {CustomerDirectoryLog} WHERE DirectoryCustomer = @DirectoryCustomerNumber";
+                    companyDirectorySettings = connection.Query<CustomerDirectorySetting>(sql, new { DirectoryCustomerNumber = DirectoryCustomerNumber }).ToList();
                 }
                 return companyDirectorySettings;
             }
@@ -112,16 +112,26 @@ namespace ERPManagementSystem.Controllers
                 List<CustomerDirectorySetting> customerDirectorySettings = new List<CustomerDirectorySetting>();
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"SELECT * FROM  {CustomerDirectoryLog} WHERE DirectoryNumber = N'{customerDirectorySetting.DirectoryNumber}'";
-                    customerDirectorySettings = connection.Query<CustomerDirectorySetting>(sql).ToList();
+                    string sql = $"SELECT * FROM  {CustomerDirectoryLog} WHERE DirectoryCustomer = @DirectoryCustomer AND DirectoryNumber = @DirectoryNumber";
+                    customerDirectorySettings = connection.Query<CustomerDirectorySetting>(sql, new { DirectoryCustomer = customerDirectorySetting.DirectoryCustomer, DirectoryNumber = customerDirectorySetting.DirectoryNumber }).ToList();
                 }
                 if (customerDirectorySettings.Count == 0)
                 {
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
                         string sql = $"INSERT INTO {CustomerDirectoryLog}(DirectoryCustomer,DirectoryNumber,DirectoryName,JobTitle,Phone,MobilePhone,Email,Remark) VALUES " +
-                            $"(N'{customerDirectorySetting.DirectoryCustomer}',N'{customerDirectorySetting.DirectoryNumber}',N'{customerDirectorySetting.DirectoryName}',N'{customerDirectorySetting.JobTitle}',N'{customerDirectorySetting.Phone}',N'{customerDirectorySetting.MobilePhone}',N'{customerDirectorySetting.Email}',N'{customerDirectorySetting.Remark}')";
-                        DateIndex = connection.Execute(sql);
+                            $"(@DirectoryCustomer,@DirectoryNumber,@DirectoryName,@JobTitle,@Phone,@MobilePhone,@Email,@Remark)";
+                        DateIndex = connection.Execute(sql, new
+                        {
+                            DirectoryCustomer = customerDirectorySetting.DirectoryCustomer,
+                            DirectoryNumber = customerDirectorySetting.DirectoryNumber,
+                            DirectoryName = customerDirectorySetting.DirectoryName,
+                            JobTitle = customerDirectorySetting.JobTitle,
+                            Phone = customerDirectorySetting.Phone,
+                            MobilePhone = customerDirectorySetting.MobilePhone,
+                            Email = customerDirectorySetting.Email,
+                            Remark = customerDirectorySetting.Remark
+                        });
                     }
                     if (DateIndex > 0)
                     {
@@ -155,9 +165,19 @@ namespace ERPManagementSystem.Controllers
                 int DateIndex = 0;
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"UPDATE {CustomerDirectoryLog} SET DirectoryCustomer = N'{customerDirectorySetting.DirectoryCustomer}',DirectoryName = N'{customerDirectorySetting.DirectoryName}',JobTitle = N'{customerDirectorySetting.JobTitle}',Phone = N'{customerDirectorySetting.Phone}',MobilePhone = N'{customerDirectorySetting.MobilePhone}',Email = N'{customerDirectorySetting.Email}',Remark = N'{customerDirectorySetting.Remark}'" +
-                        $" WHERE DirectoryNumber = N'{customerDirectorySetting.DirectoryNumber}'";
-                    DateIndex = connection.Execute(sql);
+                    string sql = $"UPDATE {CustomerDirectoryLog} SET DirectoryCustomer = @DirectoryCustomer,DirectoryName = @DirectoryName,JobTitle = @JobTitle,Phone = @Phone,MobilePhone = @MobilePhone,Email = @Email,Remark = @Remark" +
+                        $" WHERE DirectoryCustomer = @DirectoryCustomer AND  DirectoryNumber = @DirectoryNumber";
+                    DateIndex = connection.Execute(sql, new
+                    {
+                        DirectoryCustomer = customerDirectorySetting.DirectoryCustomer,
+                        DirectoryNumber = customerDirectorySetting.DirectoryNumber,
+                        DirectoryName = customerDirectorySetting.DirectoryName,
+                        JobTitle = customerDirectorySetting.JobTitle,
+                        Phone = customerDirectorySetting.Phone,
+                        MobilePhone = customerDirectorySetting.MobilePhone,
+                        Email = customerDirectorySetting.Email,
+                        Remark = customerDirectorySetting.Remark
+                    });
                 }
                 if (DateIndex > 0)
                 {
@@ -171,6 +191,40 @@ namespace ERPManagementSystem.Controllers
             catch (Exception)
             {
                 return BadRequest($"{customerDirectorySetting.DirectoryName}資訊，更新失敗");
+            }
+        }
+        /// <summary>
+        /// 客戶通訊錄資訊刪除
+        /// </summary>
+        /// <param name="customerDirectorySetting">客戶通訊錄資訊物件</param>
+        /// <returns></returns>
+        [HttpDelete]
+        public IActionResult DeleteCustomerDirectory(CustomerDirectorySetting customerDirectorySetting)
+        {
+            try
+            {
+                int DateIndex = 0;
+                using (IDbConnection connection = new SqlConnection(SqlDB))
+                {
+                    string sql = $"DELETE FROM {CustomerDirectoryLog} WHERE DirectoryCustomer = @DirectoryCustomer AND  DirectoryNumber = @DirectoryNumber";
+                    DateIndex = connection.Execute(sql, new
+                    {
+                        DirectoryCustomer = customerDirectorySetting.DirectoryCustomer,
+                        DirectoryNumber = customerDirectorySetting.DirectoryNumber,
+                    });
+                }
+                if (DateIndex > 0)
+                {
+                    return Ok($"{customerDirectorySetting.DirectoryName}資訊，刪除成功!");
+                }
+                else
+                {
+                    return BadRequest($"{customerDirectorySetting.DirectoryName}資訊，刪除失敗");
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest($"{customerDirectorySetting.DirectoryName}資訊，刪除失敗");
             }
         }
         /// <summary>
@@ -194,14 +248,20 @@ namespace ERPManagementSystem.Controllers
                         Directory.CreateDirectory($"{WorkPath}");
                     }
                     WorkPath += $"\\{AttachmentFile.FileName}";
-                    using (var stream = new FileStream(WorkPath, FileMode.Create))
+                    using (var stream = new FileStream(WorkPath, FileMode.Create,FileAccess.Write))
                     {
-                        AttachmentFile.CopyToAsync(stream);
+                        var fs = new BinaryReader(AttachmentFile.OpenReadStream());
+                        int filelong = Convert.ToInt32(AttachmentFile.Length);
+                        var bytes = new byte[filelong];
+                        fs.Read(bytes, 0, filelong);
+                        stream.Write(bytes, 0, filelong);
+                        fs.Close();
+                        stream.Flush();
                     }
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        string sql = $"UPDATE {CustomerDirectoryLog} SET FileName = N'{AttachmentFile.FileName}' WHERE DirectoryCustomer = N'{DirectoryCustomer}' AND DirectoryNumber = N'{DirectoryNumber}'";
-                        connection.Execute(sql);
+                        string sql = $"UPDATE {CustomerDirectoryLog} SET FileName = @FileName WHERE DirectoryCustomer = @DirectoryCustomer AND DirectoryNumber = @DirectoryNumber";
+                        connection.Execute(sql, new { FileName = AttachmentFile.FileName, DirectoryCustomer = DirectoryCustomer, DirectoryNumber = DirectoryNumber });
                     }
                     return Ok($"{DirectoryNumber}檔案上傳成功");
                 }
@@ -231,6 +291,47 @@ namespace ERPManagementSystem.Controllers
             catch (Exception)
             {
                 return BadRequest($"{DirectoryNumber}檔案上傳失敗");
+            }
+        }
+        /// <summary>
+        /// 客戶通訊錄附件檔案下載
+        /// </summary>
+        /// <param name="DirectoryCustomer">客戶編碼</param>
+        /// <param name="DirectoryNumber">客戶通訊錄編碼</param>
+        /// <param name="AttachmentFile">附件檔案</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("/api/CustomerDirectoryAttachmentFile")]
+        public IActionResult GetCustomerDirectoryAttachmentFile(string DirectoryCustomer, string DirectoryNumber, string AttachmentFile)
+        {
+            try
+            {
+                if (AttachmentFile != null && !string.IsNullOrEmpty(DirectoryCustomer) && !string.IsNullOrEmpty(DirectoryNumber))
+                {
+                    string FileExtension = AttachmentFile.Split('.')[1];
+                    WorkPath += $"\\{DirectoryCustomer}\\{AttachmentFile}";
+                    if (System.IO.File.Exists(WorkPath))
+                    {
+                        var memoryStream = new MemoryStream();
+                        FileStream stream = new FileStream(WorkPath, FileMode.Open);
+                        stream.CopyTo(memoryStream);
+                        memoryStream.Seek(0, SeekOrigin.Begin);
+                        stream.Close();
+                        return new FileStreamResult(memoryStream, $"application/{FileExtension}") { FileDownloadName = AttachmentFile };
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+                }
+                else
+                {
+                    return BadRequest($"{DirectoryNumber}檔案下載失敗");
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest($"{DirectoryNumber}檔案下載失敗");
             }
         }
     }

@@ -60,8 +60,8 @@ namespace ERPManagementSystem.Controllers
                 List<ProductCategorySetting> productCategorySettings = new List<ProductCategorySetting>();
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"SELECT * FROM  {ProductCategoryLog} WHERE CategoryNumber = N'{productCategorySetting.CategoryNumber}'";
-                    productCategorySettings = connection.Query<ProductCategorySetting>(sql).ToList();
+                    string sql = $"SELECT * FROM  {ProductCategoryLog} WHERE CategoryNumber = @CategoryNumber";
+                    productCategorySettings = connection.Query<ProductCategorySetting>(sql, new { CategoryNumber = productCategorySetting.CategoryNumber }).ToList();
                 }
                 if (productCategorySettings.Count == 0)
                 {
@@ -69,8 +69,8 @@ namespace ERPManagementSystem.Controllers
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
                         string sql = $"INSERT INTO {ProductCategoryLog}(CategoryNumber , CategoryName) VALUES " +
-                            $"(N'{productCategorySetting.CategoryNumber}',N'{productCategorySetting.CategoryName}')";
-                        DateIndex = connection.Execute(sql);
+                            $"(@CategoryNumber,@CategoryName)";
+                        DateIndex = connection.Execute(sql, new { CategoryNumber = productCategorySetting.CategoryNumber, CategoryName = productCategorySetting.CategoryName });
                     }
                     if (DateIndex > 0)
                     {
@@ -106,9 +106,9 @@ namespace ERPManagementSystem.Controllers
                 int DateIndex = 0;
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"UPDATE {ProductCategoryLog} SET CategoryName = N'{productCategorySetting.CategoryName}' " +
-                        $" WHERE CategoryNumber = N'{productCategorySetting.CategoryNumber}'";
-                    DateIndex = connection.Execute(sql);
+                    string sql = $"UPDATE {ProductCategoryLog} SET CategoryName = @CategoryName " +
+                        $" WHERE CategoryNumber = @CategoryNumber";
+                    DateIndex = connection.Execute(sql, new { CategoryNumber = productCategorySetting.CategoryNumber, CategoryName = productCategorySetting.CategoryName });
                 }
                 if (DateIndex > 0)
                 {
@@ -122,6 +122,36 @@ namespace ERPManagementSystem.Controllers
             catch (Exception)
             {
                 return BadRequest($"{productCategorySetting.CategoryName}資訊，更新失敗");
+            }
+        }
+        /// <summary>
+        /// 產品類別資訊刪除
+        /// </summary>
+        /// <param name="productCategorySetting">產品類別資訊物件</param>
+        /// <returns></returns>
+        [HttpDelete]
+        public IActionResult DeleteProductCategory(ProductCategorySetting productCategorySetting)
+        {
+            try
+            {
+                int DateIndex = 0;
+                using (IDbConnection connection = new SqlConnection(SqlDB))
+                {
+                    string sql = $"DELETE FROM {ProductCategoryLog} WHERE CategoryNumber = @CategoryNumber";
+                    DateIndex = connection.Execute(sql, new { CategoryNumber = productCategorySetting.CategoryNumber });
+                }
+                if (DateIndex > 0)
+                {
+                    return Ok($"{productCategorySetting.CategoryName}資訊，刪除成功!");
+                }
+                else
+                {
+                    return BadRequest($"{productCategorySetting.CategoryName}資訊，刪除失敗");
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest($"{productCategorySetting.CategoryName}資訊，刪除失敗");
             }
         }
     }

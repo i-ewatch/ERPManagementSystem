@@ -10,5 +10,5 @@
     [Remark] NVARCHAR(50) NULL, 
     [AttachmentFile] VARBINARY(MAX) NULL, 
     [FileName] NVARCHAR(50) NULL, 
-    PRIMARY KEY ([DirectoryNumber])
+    PRIMARY KEY ([DirectoryCustomer], [DirectoryNumber])
 )

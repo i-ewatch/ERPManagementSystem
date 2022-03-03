@@ -9,6 +9,10 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Web;
 
 namespace ERPManagementSystem.Controllers
 {
@@ -63,8 +67,8 @@ namespace ERPManagementSystem.Controllers
             {
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"SELECT * FROM  {CompanyLog} WHERE CompanyNumber = N'{CompanyNumber}'";
-                    companySettings = connection.Query<CompanySetting>(sql).ToList();
+                    string sql = $"SELECT * FROM  {CompanyLog} WHERE CompanyNumber = @CompanyNumber";
+                    companySettings = connection.Query<CompanySetting>(sql, new { CompanyNumber = CompanyNumber }).ToList();
                 }
                 return companySettings;
             }
@@ -86,8 +90,8 @@ namespace ERPManagementSystem.Controllers
                 List<CompanySetting> companySettings = new List<CompanySetting>();
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"SELECT * FROM  {CompanyLog} WHERE CompanyNumber = N'{companySetting.CompanyNumber}'";
-                    companySettings = connection.Query<CompanySetting>(sql).ToList();
+                    string sql = $"SELECT * FROM  {CompanyLog} WHERE CompanyNumber = @CompanyNumber";
+                    companySettings = connection.Query<CompanySetting>(sql, new { CompanyNumber = companySetting.CompanyNumber }).ToList();
                 }
                 if (companySettings.Count == 0)
                 {
@@ -95,9 +99,23 @@ namespace ERPManagementSystem.Controllers
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
                         string sql = $"INSERT INTO {CompanyLog}(CompanyNumber,CompanyName,CompanyShortName,UniformNumbers,Phone,Fax,RemittanceAccount,ContactName,ContactEmail,ContactPhone,CheckoutType,Remark) VALUES " +
-                            $"(N'{companySetting.CompanyNumber}',N'{companySetting.CompanyName}',N'{companySetting.CompanyShortName}',N'{companySetting.UniformNumbers}',N'{companySetting.Phone}',N'{companySetting.Fax}',N'{companySetting.RemittanceAccount}',N'{companySetting.ContactName}',N'{companySetting.ContactEmail}'" +
-                            $",N'{companySetting.ContactPhone}',{companySetting.CheckoutType},N'{companySetting.Remark}')";
-                        DateIndex = connection.Execute(sql);
+                            $"(@CompanyNumber,@CompanyName,@CompanyShortName,@UniformNumbers,@Phone,@Fax,@RemittanceAccount,@ContactName,@ContactEmail" +
+                            $",@ContactPhone,@CheckoutType,@Remark)";
+                        DateIndex = connection.Execute(sql, new
+                        {
+                            CompanyNumber = companySetting.CompanyNumber,
+                            CompanyName = companySetting.CompanyName,
+                            CompanyShortName = companySetting.CompanyShortName,
+                            UniformNumbers = companySetting.UniformNumbers,
+                            Phone = companySetting.Phone,
+                            Fax = companySetting.Fax,
+                            RemittanceAccount = companySetting.RemittanceAccount,
+                            ContactName = companySetting.ContactName,
+                            ContactEmail = companySetting.ContactEmail,
+                            ContactPhone = companySetting.ContactPhone,
+                            CheckoutType = companySetting.CheckoutType,
+                            Remark = companySetting.Remark
+                        });
                     }
                     if (DateIndex > 0)
                     {
@@ -132,10 +150,24 @@ namespace ERPManagementSystem.Controllers
                 int DateIndex = 0;
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"UPDATE {CompanyLog} SET CompanyName = N'{companySetting.CompanyName}',CompanyShortName = N'{companySetting.CompanyShortName}',UniformNumbers = N'{companySetting.UniformNumbers}',Phone = N'{companySetting.Phone}',Fax = N'{companySetting.Fax}',RemittanceAccount = N'{companySetting.RemittanceAccount}'," +
-                        $"ContactName = N'{companySetting.ContactName}',ContactEmail = N'{companySetting.ContactEmail}',ContactPhone = N'{companySetting.ContactPhone}',CheckoutType = {companySetting.CheckoutType},Remark = N'{companySetting.Remark}'" +
-                        $" WHERE CompanyNumber = N'{companySetting.CompanyNumber}'";
-                    DateIndex = connection.Execute(sql);
+                    string sql = $"UPDATE {CompanyLog} SET CompanyName = @CompanyName,CompanyShortName = @CompanyShortName,UniformNumbers = @UniformNumbers,Phone = @Phone,Fax = @Fax,RemittanceAccount = @RemittanceAccount," +
+                        $"ContactName = @ContactName,ContactEmail = @ContactEmail,ContactPhone = @ContactPhone,CheckoutType = @CheckoutType,Remark = @Remark" +
+                        $" WHERE CompanyNumber = @CompanyNumber";
+                    DateIndex = connection.Execute(sql, new
+                    {
+                        CompanyNumber = companySetting.CompanyNumber,
+                        CompanyName = companySetting.CompanyName,
+                        CompanyShortName = companySetting.CompanyShortName,
+                        UniformNumbers = companySetting.UniformNumbers,
+                        Phone = companySetting.Phone,
+                        Fax = companySetting.Fax,
+                        RemittanceAccount = companySetting.RemittanceAccount,
+                        ContactName = companySetting.ContactName,
+                        ContactEmail = companySetting.ContactEmail,
+                        ContactPhone = companySetting.ContactPhone,
+                        CheckoutType = companySetting.CheckoutType,
+                        Remark = companySetting.Remark
+                    });
                 }
                 if (DateIndex > 0)
                 {
@@ -149,6 +181,36 @@ namespace ERPManagementSystem.Controllers
             catch (Exception)
             {
                 return BadRequest($"{companySetting.CompanyName}資訊，更新失敗");
+            }
+        }
+        /// <summary>
+        /// 廠商資訊刪除
+        /// </summary>
+        /// <param name="companySetting">廠商資訊物件</param>
+        /// <returns></returns>
+        [HttpDelete]
+        public IActionResult DeleteCompany(CompanySetting companySetting)
+        {
+            try
+            {
+                int DateIndex = 0;
+                using (IDbConnection connection = new SqlConnection(SqlDB))
+                {
+                    string sql = $"DELETE FROM {CompanyLog} WHERE CompanyNumber = @CompanyNumber";
+                    DateIndex = connection.Execute(sql, new { CompanyNumber = companySetting.CompanyNumber });
+                }
+                if (DateIndex > 0)
+                {
+                    return Ok($"{companySetting.CompanyName}資訊，刪除成功!");
+                }
+                else
+                {
+                    return BadRequest($"{companySetting.CompanyName}資訊，刪除失敗");
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest($"{companySetting.CompanyName}資訊，刪除失敗");
             }
         }
         /// <summary>
@@ -174,12 +236,18 @@ namespace ERPManagementSystem.Controllers
                     WorkPath += $"\\{AttachmentFile.FileName}";
                     using (var stream = new FileStream(WorkPath, FileMode.Create))
                     {
-                        AttachmentFile.CopyToAsync(stream);
+                        var fs = new BinaryReader(AttachmentFile.OpenReadStream());
+                        int filelong = Convert.ToInt32(AttachmentFile.Length);
+                        var bytes = new byte[filelong];
+                        fs.Read(bytes, 0, filelong);
+                        stream.Write(bytes, 0, filelong);
+                        fs.Close();
+                        stream.Flush();
                     }
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        string sql = $"UPDATE {CompanyLog} SET FileName = N'{AttachmentFile.FileName}' WHERE CompanyNumber = N'{CompanyNumber}' AND CompanyName = N'{CompanyName}'";
-                        connection.Execute(sql);
+                        string sql = $"UPDATE {CompanyLog} SET FileName = @FileName  WHERE CompanyNumber = @CompanyNumber AND CompanyName = @CompanyName";
+                        connection.Execute(sql, new { FileName = AttachmentFile.FileName, CompanyNumber = CompanyNumber, CompanyName = CompanyName });
                     }
                     return Ok($"{CompanyName}檔案上傳成功");
                 }
@@ -209,6 +277,47 @@ namespace ERPManagementSystem.Controllers
             catch (Exception)
             {
                 return BadRequest($"{CompanyName}檔案上傳失敗");
+            }
+        }
+        /// <summary>
+        /// 廠商附件檔案下載
+        /// </summary>
+        /// <param name="CompanyNumber">廠商編碼</param>
+        /// <param name="CompanyName">廠商名稱</param>
+        /// <param name="AttachmentFile">附件檔案名稱</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("/api/CompanyAttachmentFile")]
+        public IActionResult GetCompanyAttachmentFile(string CompanyNumber, string CompanyName, string AttachmentFile)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(AttachmentFile) && !string.IsNullOrEmpty(CompanyNumber) && !string.IsNullOrEmpty(CompanyName))
+                {
+                    string FileExtension = AttachmentFile.Split('.')[1];
+                    WorkPath += $"\\{CompanyNumber}\\{AttachmentFile}";
+                    if (System.IO.File.Exists(WorkPath))
+                    {
+                        var memoryStream = new MemoryStream();
+                        FileStream stream = new FileStream(WorkPath, FileMode.Open);
+                        stream.CopyTo(memoryStream);
+                        memoryStream.Seek(0, SeekOrigin.Begin);
+                        stream.Close();
+                        return new FileStreamResult(memoryStream, $"application/{FileExtension}") { FileDownloadName = AttachmentFile};
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+                }
+                else
+                {
+                    return BadRequest($"{CompanyName}檔案下載失敗");
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest($"{CompanyName}檔案下載失敗");
             }
         }
     }

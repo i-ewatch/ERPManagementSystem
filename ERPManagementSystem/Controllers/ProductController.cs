@@ -64,8 +64,8 @@ namespace ERPManagementSystem.Controllers
             {
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"SELECT * FROM  {ProductLog} WHERE ProductType = N'{ProductType}' order by ProductNumber ";
-                    productSettings = connection.Query<ProductSetting>(sql).ToList();
+                    string sql = $"SELECT * FROM  {ProductLog} WHERE ProductType = @ProductType order by ProductNumber ";
+                    productSettings = connection.Query<ProductSetting>(sql, new { ProductType = ProductType }).ToList();
                 }
                 return productSettings;
             }
@@ -89,8 +89,8 @@ namespace ERPManagementSystem.Controllers
             {
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"SELECT * FROM  {ProductLog} WHERE ProductNumber = N'{ProductNumber}' ";
-                    productSettings = connection.Query<ProductSetting>(sql).ToList();
+                    string sql = $"SELECT * FROM  {ProductLog} WHERE ProductNumber = @ProductNumber ";
+                    productSettings = connection.Query<ProductSetting>(sql, new { ProductNumber = ProductNumber }).ToList();
                 }
                 return productSettings;
             }
@@ -113,8 +113,8 @@ namespace ERPManagementSystem.Controllers
                 List<CompanySetting> companySettings = new List<CompanySetting>();
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"SELECT * FROM  {ProductLog} WHERE ProductNumber = N'{productSetting.ProductNumber}'";
-                    companySettings = connection.Query<CompanySetting>(sql).ToList();
+                    string sql = $"SELECT * FROM  {ProductLog} WHERE ProductNumber = @ProductNumber";
+                    companySettings = connection.Query<CompanySetting>(sql, new { ProductNumber = productSetting.ProductNumber }).ToList();
                 }
                 if (companySettings.Count == 0)
                 {
@@ -122,9 +122,20 @@ namespace ERPManagementSystem.Controllers
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
                         string sql = $"INSERT INTO {ProductLog}(ProductNumber , ProductName , ProductModel , ProductType , ProductCategory , FootPrint , Remark , Explanation , ProductCompanyNumber) VALUES " +
-                            $"(N'{productSetting.ProductNumber}',N'{productSetting.ProductName}',N'{productSetting.ProductModel}',{productSetting.ProductType},N'{productSetting.ProductCategory}',N'{productSetting.FootPrint}',N'{productSetting.Remark}',N'{productSetting.Explanation}'" +
-                            $",N'{productSetting.Explanation}')";
-                        DateIndex = connection.Execute(sql);
+                            $"(@ProductNumber,@ProductName,@ProductModel,@ProductType,@ProductCategory,@FootPrint,@Remark,@Explanation" +
+                            $",@ProductCompanyNumber)";
+                        DateIndex = connection.Execute(sql, new
+                        {
+                            ProductNumber = productSetting.ProductNumber,
+                            ProductName = productSetting.ProductName,
+                            ProductModel = productSetting.ProductModel,
+                            ProductType = productSetting.ProductType,
+                            ProductCategory = productSetting.ProductCategory,
+                            FootPrint = productSetting.FootPrint,
+                            Remark = productSetting.Remark,
+                            Explanation = productSetting.Explanation,
+                            ProductCompanyNumber = productSetting.ProductCompanyNumber
+                        });
                     }
                     if (DateIndex > 0)
                     {
@@ -159,10 +170,21 @@ namespace ERPManagementSystem.Controllers
                 int DateIndex = 0;
                 using (IDbConnection connection = new SqlConnection(SqlDB))
                 {
-                    string sql = $"UPDATE {ProductLog} SET ProductName = N'{productSetting.ProductName}',ProductModel = N'{productSetting.ProductModel}',ProductType = {productSetting.ProductType},ProductCategory = N'{productSetting.ProductCategory}',FootPrint = N'{productSetting.FootPrint}'," +
-                        $"Remark = N'{productSetting.Remark}',Explanation = N'{productSetting.Explanation}' ,ProductCompanyNumber = N'{productSetting.ProductCompanyNumber}'" +
-                        $" WHERE ProductNumber = N'{productSetting.ProductNumber}'";
-                    DateIndex = connection.Execute(sql);
+                    string sql = $"UPDATE {ProductLog} SET ProductName = @ProductName,ProductModel = @ProductModel,ProductType = @ProductType,ProductCategory = @ProductCategory,FootPrint = @FootPrint," +
+                        $"Remark = @Remark,Explanation = @Explanation ,ProductCompanyNumber = @ProductCompanyNumber" +
+                        $" WHERE ProductNumber = @ProductNumber";
+                    DateIndex = connection.Execute(sql, new
+                    {
+                        ProductNumber = productSetting.ProductNumber,
+                        ProductName = productSetting.ProductName,
+                        ProductModel = productSetting.ProductModel,
+                        ProductType = productSetting.ProductType,
+                        ProductCategory = productSetting.ProductCategory,
+                        FootPrint = productSetting.FootPrint,
+                        Remark = productSetting.Remark,
+                        Explanation = productSetting.Explanation,
+                        ProductCompanyNumber = productSetting.ProductCompanyNumber
+                    });
                 }
                 if (DateIndex > 0)
                 {
@@ -176,6 +198,39 @@ namespace ERPManagementSystem.Controllers
             catch (Exception)
             {
                 return BadRequest($"{productSetting.ProductName}資訊，更新失敗");
+            }
+        }
+        /// <summary>
+        /// 產品資訊刪除
+        /// </summary>
+        /// <param name="productSetting">產品資訊物件</param>
+        /// <returns></returns>
+        [HttpDelete]
+        public IActionResult DeleteProduct(ProductSetting productSetting)
+        {
+            try
+            {
+                int DateIndex = 0;
+                using (IDbConnection connection = new SqlConnection(SqlDB))
+                {
+                    string sql = $"DELETE FROM {ProductLog} WHERE ProductNumber = @ProductNumber";
+                    DateIndex = connection.Execute(sql, new
+                    {
+                        ProductNumber = productSetting.ProductNumber,
+                    });
+                }
+                if (DateIndex > 0)
+                {
+                    return Ok($"{productSetting.ProductName}資訊，刪除成功!");
+                }
+                else
+                {
+                    return BadRequest($"{productSetting.ProductName}資訊，刪除失敗");
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest($"{productSetting.ProductName}資訊，刪除失敗");
             }
         }
         /// <summary>
@@ -201,12 +256,18 @@ namespace ERPManagementSystem.Controllers
                     WorkPath += $"\\{AttachmentFile.FileName}";
                     using (var stream = new FileStream(WorkPath, FileMode.Create))
                     {
-                        AttachmentFile.CopyToAsync(stream);
+                        var fs = new BinaryReader(AttachmentFile.OpenReadStream());
+                        int filelong = Convert.ToInt32(AttachmentFile.Length);
+                        var bytes = new byte[filelong];
+                        fs.Read(bytes, 0, filelong);
+                        stream.Write(bytes, 0, filelong);
+                        fs.Close();
+                        stream.Flush();
                     }
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        string sql = $"UPDATE {ProductLog} SET FileName = N'{AttachmentFile.FileName}' WHERE ProductNumber = N'{ProductNumber}' AND ProductName = N'{ProductName}'";
-                        connection.Execute(sql);
+                        string sql = $"UPDATE {ProductLog} SET FileName = @FileName WHERE ProductNumber = @ProductNumber AND ProductName = @ProductName";
+                        connection.Execute(sql, new { FileName = AttachmentFile.FileName, ProductNumber = ProductNumber, ProductName = ProductName });
                     }
                     return Ok($"{ProductName}檔案上傳成功");
                 }
@@ -229,6 +290,48 @@ namespace ERPManagementSystem.Controllers
             {
 
                 return BadRequest($"{ProductName}檔案上傳失敗");
+            }
+        }
+        /// <summary>
+        /// 產品附件檔案下載
+        /// </summary>
+        /// <param name="ProductNumber">產品編碼</param>
+        /// <param name="ProductName">產品名稱</param>
+        /// <param name="AttachmentFile">附件檔案</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("/api/ProductAttachmentFile")]
+        public IActionResult GetProductAttachmentFile(string ProductNumber, string ProductName, string AttachmentFile)
+        {
+            try
+            {
+                if (AttachmentFile != null && !string.IsNullOrEmpty(ProductNumber) && !string.IsNullOrEmpty(ProductName))
+                {
+                    string FileExtension = AttachmentFile.Split('.')[1];
+                    WorkPath += $"\\{ProductNumber}\\{AttachmentFile}";
+                    if (System.IO.File.Exists(WorkPath))
+                    {
+                        var memoryStream = new MemoryStream();
+                        FileStream stream = new FileStream(WorkPath, FileMode.Open);
+                        stream.CopyTo(memoryStream);
+                        memoryStream.Seek(0, SeekOrigin.Begin);
+                        stream.Close();
+                        return new FileStreamResult(memoryStream, $"application/{FileExtension}") { FileDownloadName = AttachmentFile };
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+                }
+                else
+                {
+                    return BadRequest($"{ProductName}檔案下載失敗");
+                }
+            }
+            catch (Exception)
+            {
+
+                return BadRequest($"{ProductName}檔案下載失敗");
             }
         }
     }
