@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ERPManagementSystem.Controllers
 {
@@ -29,16 +30,19 @@ namespace ERPManagementSystem.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public List<ProductCategorySetting> GetCategoryProduct()
+        public async Task<List<ProductCategorySetting>> GetCategoryProduct()
         {
             List<ProductCategorySetting> productCategorySettings = new List<ProductCategorySetting>();
             try
             {
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"SELECT * FROM  {ProductCategoryLog} order by CategoryNumber ";
-                    productCategorySettings = connection.Query<ProductCategorySetting>(sql).ToList();
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  {ProductCategoryLog} order by CategoryNumber ";
+                        productCategorySettings = connection.Query<ProductCategorySetting>(sql).ToList();
+                    }
+                });
                 return productCategorySettings;
             }
             catch (Exception)
@@ -53,25 +57,31 @@ namespace ERPManagementSystem.Controllers
         /// <param name="productCategorySetting">產品類別資訊物件</param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult PostProduct(ProductCategorySetting productCategorySetting)
+        public async Task<IActionResult> PostProduct(ProductCategorySetting productCategorySetting)
         {
             try
             {
                 List<ProductCategorySetting> productCategorySettings = new List<ProductCategorySetting>();
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"SELECT * FROM  {ProductCategoryLog} WHERE CategoryNumber = @CategoryNumber";
-                    productCategorySettings = connection.Query<ProductCategorySetting>(sql, new { CategoryNumber = productCategorySetting.CategoryNumber }).ToList();
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  {ProductCategoryLog} WHERE CategoryNumber = @CategoryNumber";
+                        productCategorySettings = connection.Query<ProductCategorySetting>(sql, new { CategoryNumber = productCategorySetting.CategoryNumber }).ToList();
+                    }
+                });
                 if (productCategorySettings.Count == 0)
                 {
                     int DateIndex = 0;
-                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    await Task.Run(() =>
                     {
-                        string sql = $"INSERT INTO {ProductCategoryLog}(CategoryNumber , CategoryName) VALUES " +
-                            $"(@CategoryNumber,@CategoryName)";
-                        DateIndex = connection.Execute(sql, new { CategoryNumber = productCategorySetting.CategoryNumber, CategoryName = productCategorySetting.CategoryName });
-                    }
+                        using (IDbConnection connection = new SqlConnection(SqlDB))
+                        {
+                            string sql = $"INSERT INTO {ProductCategoryLog}(CategoryNumber , CategoryName) VALUES " +
+                                $"(@CategoryNumber,@CategoryName)";
+                            DateIndex = connection.Execute(sql, new { CategoryNumber = productCategorySetting.CategoryNumber, CategoryName = productCategorySetting.CategoryName });
+                        }
+                    });
                     if (DateIndex > 0)
                     {
                         return Ok($"{productCategorySetting.CategoryName}資訊，上傳成功!");
@@ -99,17 +109,20 @@ namespace ERPManagementSystem.Controllers
         /// <param name="productCategorySetting">產品類別資訊物件</param>
         /// <returns></returns>
         [HttpPut]
-        public IActionResult UpdateProductCategory(ProductCategorySetting productCategorySetting)
+        public async Task<IActionResult> UpdateProductCategory(ProductCategorySetting productCategorySetting)
         {
             try
             {
                 int DateIndex = 0;
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"UPDATE {ProductCategoryLog} SET CategoryName = @CategoryName " +
-                        $" WHERE CategoryNumber = @CategoryNumber";
-                    DateIndex = connection.Execute(sql, new { CategoryNumber = productCategorySetting.CategoryNumber, CategoryName = productCategorySetting.CategoryName });
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"UPDATE {ProductCategoryLog} SET CategoryName = @CategoryName " +
+                            $" WHERE CategoryNumber = @CategoryNumber";
+                        DateIndex = connection.Execute(sql, new { CategoryNumber = productCategorySetting.CategoryNumber, CategoryName = productCategorySetting.CategoryName });
+                    }
+                });
                 if (DateIndex > 0)
                 {
                     return Ok($"{productCategorySetting.CategoryName}資訊，更新成功!");
@@ -130,16 +143,19 @@ namespace ERPManagementSystem.Controllers
         /// <param name="productCategorySetting">產品類別資訊物件</param>
         /// <returns></returns>
         [HttpDelete]
-        public IActionResult DeleteProductCategory(ProductCategorySetting productCategorySetting)
+        public async Task<IActionResult> DeleteProductCategory(ProductCategorySetting productCategorySetting)
         {
             try
             {
                 int DateIndex = 0;
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"DELETE FROM {ProductCategoryLog} WHERE CategoryNumber = @CategoryNumber";
-                    DateIndex = connection.Execute(sql, new { CategoryNumber = productCategorySetting.CategoryNumber });
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"DELETE FROM {ProductCategoryLog} WHERE CategoryNumber = @CategoryNumber";
+                        DateIndex = connection.Execute(sql, new { CategoryNumber = productCategorySetting.CategoryNumber });
+                    }
+                });
                 if (DateIndex > 0)
                 {
                     return Ok($"{productCategorySetting.CategoryName}資訊，刪除成功!");

@@ -10,6 +10,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ERPManagementSystem.Controllers
 {
@@ -33,16 +34,19 @@ namespace ERPManagementSystem.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public List<CompanyDirectorySetting> GetCompany()
+        public async Task<List<CompanyDirectorySetting>> GetCompany()
         {
             List<CompanyDirectorySetting> companyDirectorySettings = new List<CompanyDirectorySetting>();
             try
             {
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"SELECT * FROM  {CompanyDirectoryLog}";
-                    companyDirectorySettings = connection.Query<CompanyDirectorySetting>(sql).ToList();
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  {CompanyDirectoryLog}";
+                        companyDirectorySettings = connection.Query<CompanyDirectorySetting>(sql).ToList();
+                    }
+                });
                 return companyDirectorySettings;
             }
             catch (Exception)
@@ -57,16 +61,19 @@ namespace ERPManagementSystem.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("/api/CompanyDirectoryNumber/{CompanyDirectoryNumber}")]
-        public List<CompanyDirectorySetting> GetCompanyDirectoryNumber(string CompanyDirectoryNumber)
+        public async Task<List<CompanyDirectorySetting>> GetCompanyDirectoryNumber(string CompanyDirectoryNumber)
         {
             List<CompanyDirectorySetting> companyDirectorySettings = new List<CompanyDirectorySetting>();
             try
             {
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"SELECT * FROM  {CompanyDirectoryLog} WHERE DirectoryNumber = @CompanyDirectoryNumber";
-                    companyDirectorySettings = connection.Query<CompanyDirectorySetting>(sql, new { CompanyDirectoryNumber = CompanyDirectoryNumber }).ToList();
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  {CompanyDirectoryLog} WHERE DirectoryNumber = @CompanyDirectoryNumber";
+                        companyDirectorySettings = connection.Query<CompanyDirectorySetting>(sql, new { CompanyDirectoryNumber = CompanyDirectoryNumber }).ToList();
+                    }
+                });
                 return companyDirectorySettings;
             }
             catch (Exception)
@@ -81,16 +88,19 @@ namespace ERPManagementSystem.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("/api/DirectoryCompany/{DirectoryCompanyNumber}")]
-        public List<CompanyDirectorySetting> GetCompanyNumber(string DirectoryCompanyNumber)
+        public async Task<List<CompanyDirectorySetting>> GetCompanyNumber(string DirectoryCompanyNumber)
         {
             List<CompanyDirectorySetting> companyDirectorySettings = new List<CompanyDirectorySetting>();
             try
             {
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"SELECT * FROM  {CompanyDirectoryLog} WHERE DirectoryCompany = @DirectoryCompanyNumber";
-                    companyDirectorySettings = connection.Query<CompanyDirectorySetting>(sql, new { DirectoryCompanyNumber = DirectoryCompanyNumber }).ToList();
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  {CompanyDirectoryLog} WHERE DirectoryCompany = @DirectoryCompanyNumber";
+                        companyDirectorySettings = connection.Query<CompanyDirectorySetting>(sql, new { DirectoryCompanyNumber = DirectoryCompanyNumber }).ToList();
+                    }
+                });
                 return companyDirectorySettings;
             }
             catch (Exception)
@@ -104,35 +114,41 @@ namespace ERPManagementSystem.Controllers
         /// <param name="companyDirectorySetting">廠商通訊錄資訊物件</param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult InserterCompanyDirectory(CompanyDirectorySetting companyDirectorySetting)
+        public async Task<IActionResult> InserterCompanyDirectory(CompanyDirectorySetting companyDirectorySetting)
         {
             try
             {
                 int DateIndex = 0;
                 List<CompanyDirectorySetting> companyDirectorySettings = new List<CompanyDirectorySetting>();
-                using (IDbConnection connection = new SqlConnection(SqlDB))
-                {
-                    string sql = $"SELECT * FROM  {CompanyDirectoryLog} WHERE DirectoryCompany = @DirectoryCompany AND DirectoryNumber = @DirectoryNumber";
-                    companyDirectorySettings = connection.Query<CompanyDirectorySetting>(sql, new { DirectoryCompany = companyDirectorySetting.DirectoryCompany, DirectoryNumber = companyDirectorySetting.DirectoryNumber }).ToList();
-                }
-                if (companyDirectorySettings.Count == 0)
+                await Task.Run(() =>
                 {
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        string sql = $"INSERT INTO {CompanyDirectoryLog} (DirectoryCompany,DirectoryNumber,DirectoryName,JobTitle,Phone,MobilePhone,Email,Remark) VALUES " +
-                            $"(@DirectoryCompany,@DirectoryNumber,@DirectoryName,@JobTitle,@Phone,@MobilePhone,@Email,@Remark)";
-                        DateIndex = connection.Execute(sql, new
-                        {
-                            DirectoryCompany = companyDirectorySetting.DirectoryCompany,
-                            DirectoryNumber = companyDirectorySetting.DirectoryNumber,
-                            DirectoryName = companyDirectorySetting.DirectoryName,
-                            JobTitle = companyDirectorySetting.JobTitle,
-                            Phone = companyDirectorySetting.Phone,
-                            MobilePhone = companyDirectorySetting.MobilePhone,
-                            Email = companyDirectorySetting.Email,
-                            Remark = companyDirectorySetting.Remark
-                        });
+                        string sql = $"SELECT * FROM  {CompanyDirectoryLog} WHERE DirectoryCompany = @DirectoryCompany AND DirectoryNumber = @DirectoryNumber";
+                        companyDirectorySettings = connection.Query<CompanyDirectorySetting>(sql, new { DirectoryCompany = companyDirectorySetting.DirectoryCompany, DirectoryNumber = companyDirectorySetting.DirectoryNumber }).ToList();
                     }
+                });
+                if (companyDirectorySettings.Count == 0)
+                {
+                    await Task.Run(() =>
+                    {
+                        using (IDbConnection connection = new SqlConnection(SqlDB))
+                        {
+                            string sql = $"INSERT INTO {CompanyDirectoryLog} (DirectoryCompany,DirectoryNumber,DirectoryName,JobTitle,Phone,MobilePhone,Email,Remark) VALUES " +
+                                $"(@DirectoryCompany,@DirectoryNumber,@DirectoryName,@JobTitle,@Phone,@MobilePhone,@Email,@Remark)";
+                            DateIndex = connection.Execute(sql, new
+                            {
+                                DirectoryCompany = companyDirectorySetting.DirectoryCompany,
+                                DirectoryNumber = companyDirectorySetting.DirectoryNumber,
+                                DirectoryName = companyDirectorySetting.DirectoryName,
+                                JobTitle = companyDirectorySetting.JobTitle,
+                                Phone = companyDirectorySetting.Phone,
+                                MobilePhone = companyDirectorySetting.MobilePhone,
+                                Email = companyDirectorySetting.Email,
+                                Remark = companyDirectorySetting.Remark
+                            });
+                        }
+                    });
                     if (DateIndex > 0)
                     {
                         return Ok($"{companyDirectorySetting.DirectoryName}資訊，上傳成功!");
@@ -158,27 +174,30 @@ namespace ERPManagementSystem.Controllers
         /// <param name="companyDirectorySetting">廠商通訊錄資訊物件</param>
         /// <returns></returns>
         [HttpPut]
-        public IActionResult UpdateCompanyDirectory(CompanyDirectorySetting companyDirectorySetting)
+        public async Task<IActionResult> UpdateCompanyDirectory(CompanyDirectorySetting companyDirectorySetting)
         {
             try
             {
                 int DateIndex = 0;
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"UPDATE {CompanyDirectoryLog} SET DirectoryName = @DirectoryName,JobTitle = @JobTitle,Phone = @Phone,MobilePhone = @MobilePhone,Email = @Email,Remark = @Remark" +
-                        $" WHERE DirectoryCompany = @DirectoryCompany AND DirectoryNumber = @DirectoryNumber";
-                    DateIndex = connection.Execute(sql, new
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        DirectoryCompany = companyDirectorySetting.DirectoryCompany,
-                        DirectoryNumber = companyDirectorySetting.DirectoryNumber,
-                        DirectoryName = companyDirectorySetting.DirectoryName,
-                        JobTitle = companyDirectorySetting.JobTitle,
-                        Phone = companyDirectorySetting.Phone,
-                        MobilePhone = companyDirectorySetting.MobilePhone,
-                        Email = companyDirectorySetting.Email,
-                        Remark = companyDirectorySetting.Remark,
-                    });
-                }
+                        string sql = $"UPDATE {CompanyDirectoryLog} SET DirectoryName = @DirectoryName,JobTitle = @JobTitle,Phone = @Phone,MobilePhone = @MobilePhone,Email = @Email,Remark = @Remark" +
+                            $" WHERE DirectoryCompany = @DirectoryCompany AND DirectoryNumber = @DirectoryNumber";
+                        DateIndex = connection.Execute(sql, new
+                        {
+                            DirectoryCompany = companyDirectorySetting.DirectoryCompany,
+                            DirectoryNumber = companyDirectorySetting.DirectoryNumber,
+                            DirectoryName = companyDirectorySetting.DirectoryName,
+                            JobTitle = companyDirectorySetting.JobTitle,
+                            Phone = companyDirectorySetting.Phone,
+                            MobilePhone = companyDirectorySetting.MobilePhone,
+                            Email = companyDirectorySetting.Email,
+                            Remark = companyDirectorySetting.Remark,
+                        });
+                    }
+                });
                 if (DateIndex > 0)
                 {
                     return Ok($"{companyDirectorySetting.DirectoryName}資訊，更新成功!");
@@ -199,20 +218,23 @@ namespace ERPManagementSystem.Controllers
         /// <param name="companyDirectorySetting">廠商通訊錄資訊物件</param>
         /// <returns></returns>
         [HttpDelete]
-        public IActionResult DeleteCompanyDirectory(CompanyDirectorySetting companyDirectorySetting)
+        public async Task<IActionResult> DeleteCompanyDirectory(CompanyDirectorySetting companyDirectorySetting)
         {
             try
             {
                 int DateIndex = 0;
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql =  $"DELETE FROM {CompanyDirectoryLog} WHERE DirectoryCompany = @DirectoryCompany AND DirectoryNumber = @DirectoryNumber";
-                    DateIndex = connection.Execute(sql, new
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        DirectoryCompany = companyDirectorySetting.DirectoryCompany,
-                        DirectoryNumber = companyDirectorySetting.DirectoryNumber
-                    });
-                }
+                        string sql = $"DELETE FROM {CompanyDirectoryLog} WHERE DirectoryCompany = @DirectoryCompany AND DirectoryNumber = @DirectoryNumber";
+                        DateIndex = connection.Execute(sql, new
+                        {
+                            DirectoryCompany = companyDirectorySetting.DirectoryCompany,
+                            DirectoryNumber = companyDirectorySetting.DirectoryNumber
+                        });
+                    }
+                });
                 if (DateIndex > 0)
                 {
                     return Ok($"{companyDirectorySetting.DirectoryName}資訊，刪除成功!");
@@ -236,33 +258,36 @@ namespace ERPManagementSystem.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("/api/CompanyDirectoryAttachmentFile")]
-        public IActionResult PostCompanyDirectoryAttachmentFile(string DirectoryCompany, string DirectoryNumber,IFormFile AttachmentFile)
+        public async Task<IActionResult> PostCompanyDirectoryAttachmentFile(string DirectoryCompany, string DirectoryNumber, IFormFile AttachmentFile)
         {
             try
             {
                 if (AttachmentFile != null && !string.IsNullOrEmpty(DirectoryCompany) && !string.IsNullOrEmpty(DirectoryNumber))
                 {
-                    WorkPath += $"\\{DirectoryCompany}";
-                    if (!Directory.Exists(WorkPath))
+                    await Task.Run(() =>
                     {
-                        Directory.CreateDirectory($"{WorkPath}");
-                    }
-                    WorkPath += $"\\{AttachmentFile.FileName}";
-                    using (var stream = new FileStream(WorkPath, FileMode.Create))
-                    {
-                        var fs = new BinaryReader(AttachmentFile.OpenReadStream());
-                        int filelong = Convert.ToInt32(AttachmentFile.Length);
-                        var bytes = new byte[filelong];
-                        fs.Read(bytes, 0, filelong);
-                        stream.Write(bytes, 0, filelong);
-                        fs.Close();
-                        stream.Flush();
-                    }
-                    using (IDbConnection connection = new SqlConnection(SqlDB))
-                    {
-                        string sql = $"UPDATE {CompanyDirectoryLog} SET FileName = @FileName WHERE DirectoryCompany = @DirectoryCompany AND DirectoryNumber = @DirectoryNumber";
-                        connection.Execute(sql, new { FileName = AttachmentFile.FileName, DirectoryCompany = DirectoryCompany, DirectoryNumber = DirectoryNumber });
-                    }
+                        WorkPath += $"\\{DirectoryCompany}";
+                        if (!Directory.Exists(WorkPath))
+                        {
+                            Directory.CreateDirectory($"{WorkPath}");
+                        }
+                        WorkPath += $"\\{AttachmentFile.FileName}";
+                        using (var stream = new FileStream(WorkPath, FileMode.Create))
+                        {
+                            var fs = new BinaryReader(AttachmentFile.OpenReadStream());
+                            int filelong = Convert.ToInt32(AttachmentFile.Length);
+                            var bytes = new byte[filelong];
+                            fs.Read(bytes, 0, filelong);
+                            stream.Write(bytes, 0, filelong);
+                            fs.Close();
+                            stream.Flush();
+                        }
+                        using (IDbConnection connection = new SqlConnection(SqlDB))
+                        {
+                            string sql = $"UPDATE {CompanyDirectoryLog} SET FileName = @FileName WHERE DirectoryCompany = @DirectoryCompany AND DirectoryNumber = @DirectoryNumber";
+                            connection.Execute(sql, new { FileName = AttachmentFile.FileName, DirectoryCompany = DirectoryCompany, DirectoryNumber = DirectoryNumber });
+                        }
+                    });
                     return Ok($"{DirectoryNumber}檔案上傳成功");
                 }
                 else
@@ -302,7 +327,7 @@ namespace ERPManagementSystem.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("/api/CompanyDirectoryAttachmentFile")]
-        public IActionResult GetCompanyDirectoryAttachmentFile(string DirectoryCompany, string DirectoryNumber, string AttachmentFile)
+        public async Task<IActionResult> GetCompanyDirectoryAttachmentFile(string DirectoryCompany, string DirectoryNumber, string AttachmentFile)
         {
             try
             {
@@ -313,10 +338,13 @@ namespace ERPManagementSystem.Controllers
                     if (System.IO.File.Exists(WorkPath))
                     {
                         var memoryStream = new MemoryStream();
-                        FileStream stream = new FileStream(WorkPath, FileMode.Open);
-                        stream.CopyTo(memoryStream);
-                        memoryStream.Seek(0, SeekOrigin.Begin);
-                        stream.Close();
+                        await Task.Run(() =>
+                        {
+                            FileStream stream = new FileStream(WorkPath, FileMode.Open);
+                            stream.CopyTo(memoryStream);
+                            memoryStream.Seek(0, SeekOrigin.Begin);
+                            stream.Close();
+                        });
                         return new FileStreamResult(memoryStream, $"application/{FileExtension}") { FileDownloadName = AttachmentFile };
                     }
                     else

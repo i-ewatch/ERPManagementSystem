@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ERPManagementSystem.Controllers
 {
@@ -28,16 +29,19 @@ namespace ERPManagementSystem.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public List<EmployeeSetting> GetEmployee()
+        public async Task<List<EmployeeSetting>> GetEmployee()
         {
             List<EmployeeSetting> employeeSettings = new List<EmployeeSetting>();
             try
             {
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"SELECT * FROM  {EmployeeLog}";
-                    employeeSettings = connection.Query<EmployeeSetting>(sql).ToList();
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  {EmployeeLog}";
+                        employeeSettings = connection.Query<EmployeeSetting>(sql).ToList();
+                    }
+                });
                 return employeeSettings;
             }
             catch (Exception)
@@ -52,16 +56,19 @@ namespace ERPManagementSystem.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("/api/EmployeeNumber/{EmployeeNumber}")]
-        public List<EmployeeSetting> GetEmployeeNumber(string EmployeeNumber)
+        public async Task<List<EmployeeSetting>> GetEmployeeNumber(string EmployeeNumber)
         {
             List<EmployeeSetting> employeeSettings = new List<EmployeeSetting>();
             try
             {
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"SELECT * FROM  {EmployeeLog} WHERE EmployeeNumber = @EmployeeNumber";
-                    employeeSettings = connection.Query<EmployeeSetting>(sql, new { EmployeeNumber = EmployeeNumber }).ToList();
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  {EmployeeLog} WHERE EmployeeNumber = @EmployeeNumber";
+                        employeeSettings = connection.Query<EmployeeSetting>(sql, new { EmployeeNumber = EmployeeNumber }).ToList();
+                    }
+                });
                 return employeeSettings;
             }
             catch (Exception)
@@ -75,32 +82,38 @@ namespace ERPManagementSystem.Controllers
         /// <param name="employeeSetting">員工資訊物件</param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult InserterEmployee(EmployeeSetting employeeSetting)
+        public async Task<IActionResult> InserterEmployee(EmployeeSetting employeeSetting)
         {
             try
             {
                 List<EmployeeSetting> employeeSettings = new List<EmployeeSetting>();
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"SELECT * FROM  {EmployeeLog} WHERE EmployeeNumber = @EmployeeNumber";
-                    employeeSettings = connection.Query<EmployeeSetting>(sql, new { EmployeeNumber = employeeSetting.EmployeeNumber }).ToList();
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  {EmployeeLog} WHERE EmployeeNumber = @EmployeeNumber";
+                        employeeSettings = connection.Query<EmployeeSetting>(sql, new { EmployeeNumber = employeeSetting.EmployeeNumber }).ToList();
+                    }
+                });
                 if (employeeSettings.Count == 0)
                 {
                     int DateIndex = 0;
-                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    await Task.Run(() =>
                     {
-                        string sql = $"INSERT INTO {EmployeeLog}(EmployeeNumber,EmployeeName,Phone,Address,Token) VALUES " +
-                            $"(@EmployeeNumber,@EmployeeName,@Phone,@Address,@Token)";
-                        DateIndex = connection.Execute(sql, new
+                        using (IDbConnection connection = new SqlConnection(SqlDB))
                         {
-                            EmployeeNumber = employeeSetting.EmployeeNumber,
-                            EmployeeName = employeeSetting.EmployeeName,
-                            Phone = employeeSetting.Phone,
-                            Address = employeeSetting.Address,
-                            Token = employeeSetting.Token
-                        });
-                    }
+                            string sql = $"INSERT INTO {EmployeeLog}(EmployeeNumber,EmployeeName,Phone,Address,Token) VALUES " +
+                                $"(@EmployeeNumber,@EmployeeName,@Phone,@Address,@Token)";
+                            DateIndex = connection.Execute(sql, new
+                            {
+                                EmployeeNumber = employeeSetting.EmployeeNumber,
+                                EmployeeName = employeeSetting.EmployeeName,
+                                Phone = employeeSetting.Phone,
+                                Address = employeeSetting.Address,
+                                Token = employeeSetting.Token
+                            });
+                        }
+                    });
                     if (DateIndex > 0)
                     {
                         return Ok($"{employeeSetting.EmployeeName}資訊，上傳成功!");
@@ -127,24 +140,27 @@ namespace ERPManagementSystem.Controllers
         /// <param name="employeeSetting">員工資訊物件</param>
         /// <returns></returns>
         [HttpPut]
-        public IActionResult UpdateEmployee(EmployeeSetting employeeSetting)
+        public async Task<IActionResult> UpdateEmployee(EmployeeSetting employeeSetting)
         {
             try
             {
                 int DateIndex = 0;
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"UPDATE {EmployeeLog} SET EmployeeName = @EmployeeName,Phone = @Phone,Address = @Address,Token = @Token" +
-                        $" WHERE EmployeeNumber = @EmployeeNumber";
-                    DateIndex = connection.Execute(sql, new
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        EmployeeNumber = employeeSetting.EmployeeNumber,
-                        EmployeeName = employeeSetting.EmployeeName,
-                        Phone = employeeSetting.Phone,
-                        Address = employeeSetting.Address,
-                        Token = employeeSetting.Token
-                    });
-                }
+                        string sql = $"UPDATE {EmployeeLog} SET EmployeeName = @EmployeeName,Phone = @Phone,Address = @Address,Token = @Token" +
+                            $" WHERE EmployeeNumber = @EmployeeNumber";
+                        DateIndex = connection.Execute(sql, new
+                        {
+                            EmployeeNumber = employeeSetting.EmployeeNumber,
+                            EmployeeName = employeeSetting.EmployeeName,
+                            Phone = employeeSetting.Phone,
+                            Address = employeeSetting.Address,
+                            Token = employeeSetting.Token
+                        });
+                    }
+                });
                 if (DateIndex > 0)
                 {
                     return Ok($"{employeeSetting.EmployeeName}資訊，更新成功!");
@@ -165,19 +181,22 @@ namespace ERPManagementSystem.Controllers
         /// <param name="employeeSetting">員工資訊物件</param>
         /// <returns></returns>
         [HttpDelete]
-        public IActionResult DeleteEmployee(EmployeeSetting employeeSetting)
+        public async Task<IActionResult> DeleteEmployee(EmployeeSetting employeeSetting)
         {
             try
             {
                 int DateIndex = 0;
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"DELETE FROM {EmployeeLog} WHERE EmployeeNumber = @EmployeeNumber";
-                    DateIndex = connection.Execute(sql, new
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        EmployeeNumber = employeeSetting.EmployeeNumber
-                    });
-                }
+                        string sql = $"DELETE FROM {EmployeeLog} WHERE EmployeeNumber = @EmployeeNumber";
+                        DateIndex = connection.Execute(sql, new
+                        {
+                            EmployeeNumber = employeeSetting.EmployeeNumber
+                        });
+                    }
+                });
                 if (DateIndex > 0)
                 {
                     return Ok($"{employeeSetting.EmployeeName}資訊，刪除成功!");

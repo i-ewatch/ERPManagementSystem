@@ -9,6 +9,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ERPManagementSystem.Controllers
 {
@@ -32,16 +33,19 @@ namespace ERPManagementSystem.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public List<ProductSetting> GetProduct()
+        public async Task<List<ProductSetting>> GetProduct()
         {
             List<ProductSetting> productSettings = new List<ProductSetting>();
             try
             {
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"SELECT * FROM  {ProductLog} order by ProductNumber ";
-                    productSettings = connection.Query<ProductSetting>(sql).ToList();
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  {ProductLog} order by ProductNumber ";
+                        productSettings = connection.Query<ProductSetting>(sql).ToList();
+                    }
+                });
                 return productSettings;
             }
             catch (Exception)
@@ -57,16 +61,19 @@ namespace ERPManagementSystem.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("/api/ProductNumber/ProductType/{ProductType}")]
-        public List<ProductSetting> GetProductType(string ProductType)
+        public async Task<List<ProductSetting>> GetProductType(string ProductType)
         {
             List<ProductSetting> productSettings = new List<ProductSetting>();
             try
             {
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"SELECT * FROM  {ProductLog} WHERE ProductType = @ProductType order by ProductNumber ";
-                    productSettings = connection.Query<ProductSetting>(sql, new { ProductType = ProductType }).ToList();
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  {ProductLog} WHERE ProductType = @ProductType order by ProductNumber ";
+                        productSettings = connection.Query<ProductSetting>(sql, new { ProductType = ProductType }).ToList();
+                    }
+                });
                 return productSettings;
             }
             catch (Exception)
@@ -82,16 +89,19 @@ namespace ERPManagementSystem.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("/api/ProductNumber/{ProductNumber}")]
-        public List<ProductSetting> GetProductNumber(string ProductNumber)
+        public async Task<List<ProductSetting>> GetProductNumber(string ProductNumber)
         {
             List<ProductSetting> productSettings = new List<ProductSetting>();
             try
             {
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"SELECT * FROM  {ProductLog} WHERE ProductNumber = @ProductNumber ";
-                    productSettings = connection.Query<ProductSetting>(sql, new { ProductNumber = ProductNumber }).ToList();
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  {ProductLog} WHERE ProductNumber = @ProductNumber ";
+                        productSettings = connection.Query<ProductSetting>(sql, new { ProductNumber = ProductNumber }).ToList();
+                    }
+                });
                 return productSettings;
             }
             catch (Exception)
@@ -106,37 +116,43 @@ namespace ERPManagementSystem.Controllers
         /// <param name="productSetting">產品資訊物件</param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult PostProduct(ProductSetting productSetting)
+        public async Task<IActionResult> PostProduct(ProductSetting productSetting)
         {
             try
             {
                 List<CompanySetting> companySettings = new List<CompanySetting>();
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"SELECT * FROM  {ProductLog} WHERE ProductNumber = @ProductNumber";
-                    companySettings = connection.Query<CompanySetting>(sql, new { ProductNumber = productSetting.ProductNumber }).ToList();
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  {ProductLog} WHERE ProductNumber = @ProductNumber";
+                        companySettings = connection.Query<CompanySetting>(sql, new { ProductNumber = productSetting.ProductNumber }).ToList();
+                    }
+                });
                 if (companySettings.Count == 0)
                 {
                     int DateIndex = 0;
-                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    await Task.Run(() =>
                     {
-                        string sql = $"INSERT INTO {ProductLog}(ProductNumber , ProductName , ProductModel , ProductType , ProductCategory , FootPrint , Remark , Explanation , ProductCompanyNumber) VALUES " +
-                            $"(@ProductNumber,@ProductName,@ProductModel,@ProductType,@ProductCategory,@FootPrint,@Remark,@Explanation" +
-                            $",@ProductCompanyNumber)";
-                        DateIndex = connection.Execute(sql, new
+                        using (IDbConnection connection = new SqlConnection(SqlDB))
                         {
-                            ProductNumber = productSetting.ProductNumber,
-                            ProductName = productSetting.ProductName,
-                            ProductModel = productSetting.ProductModel,
-                            ProductType = productSetting.ProductType,
-                            ProductCategory = productSetting.ProductCategory,
-                            FootPrint = productSetting.FootPrint,
-                            Remark = productSetting.Remark,
-                            Explanation = productSetting.Explanation,
-                            ProductCompanyNumber = productSetting.ProductCompanyNumber
-                        });
-                    }
+                            string sql = $"INSERT INTO {ProductLog}(ProductNumber , ProductName , ProductModel , ProductType , ProductCategory , FootPrint , Remark , Explanation , ProductCompanyNumber) VALUES " +
+                                $"(@ProductNumber,@ProductName,@ProductModel,@ProductType,@ProductCategory,@FootPrint,@Remark,@Explanation" +
+                                $",@ProductCompanyNumber)";
+                            DateIndex = connection.Execute(sql, new
+                            {
+                                ProductNumber = productSetting.ProductNumber,
+                                ProductName = productSetting.ProductName,
+                                ProductModel = productSetting.ProductModel,
+                                ProductType = productSetting.ProductType,
+                                ProductCategory = productSetting.ProductCategory,
+                                FootPrint = productSetting.FootPrint,
+                                Remark = productSetting.Remark,
+                                Explanation = productSetting.Explanation,
+                                ProductCompanyNumber = productSetting.ProductCompanyNumber
+                            });
+                        }
+                    });
                     if (DateIndex > 0)
                     {
                         return Ok($"{productSetting.ProductName}資訊，上傳成功!");
@@ -163,29 +179,32 @@ namespace ERPManagementSystem.Controllers
         /// <param name="productSetting">產品資訊物件</param>
         /// <returns></returns>
         [HttpPut]
-        public IActionResult UpdateProduct(ProductSetting productSetting)
+        public async Task<IActionResult> UpdateProduct(ProductSetting productSetting)
         {
             try
             {
                 int DateIndex = 0;
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"UPDATE {ProductLog} SET ProductName = @ProductName,ProductModel = @ProductModel,ProductType = @ProductType,ProductCategory = @ProductCategory,FootPrint = @FootPrint," +
-                        $"Remark = @Remark,Explanation = @Explanation ,ProductCompanyNumber = @ProductCompanyNumber" +
-                        $" WHERE ProductNumber = @ProductNumber";
-                    DateIndex = connection.Execute(sql, new
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        ProductNumber = productSetting.ProductNumber,
-                        ProductName = productSetting.ProductName,
-                        ProductModel = productSetting.ProductModel,
-                        ProductType = productSetting.ProductType,
-                        ProductCategory = productSetting.ProductCategory,
-                        FootPrint = productSetting.FootPrint,
-                        Remark = productSetting.Remark,
-                        Explanation = productSetting.Explanation,
-                        ProductCompanyNumber = productSetting.ProductCompanyNumber
-                    });
-                }
+                        string sql = $"UPDATE {ProductLog} SET ProductName = @ProductName,ProductModel = @ProductModel,ProductType = @ProductType,ProductCategory = @ProductCategory,FootPrint = @FootPrint," +
+                            $"Remark = @Remark,Explanation = @Explanation ,ProductCompanyNumber = @ProductCompanyNumber" +
+                            $" WHERE ProductNumber = @ProductNumber";
+                        DateIndex = connection.Execute(sql, new
+                        {
+                            ProductNumber = productSetting.ProductNumber,
+                            ProductName = productSetting.ProductName,
+                            ProductModel = productSetting.ProductModel,
+                            ProductType = productSetting.ProductType,
+                            ProductCategory = productSetting.ProductCategory,
+                            FootPrint = productSetting.FootPrint,
+                            Remark = productSetting.Remark,
+                            Explanation = productSetting.Explanation,
+                            ProductCompanyNumber = productSetting.ProductCompanyNumber
+                        });
+                    }
+                });
                 if (DateIndex > 0)
                 {
                     return Ok($"{productSetting.ProductName}資訊，更新成功!");
@@ -206,19 +225,22 @@ namespace ERPManagementSystem.Controllers
         /// <param name="productSetting">產品資訊物件</param>
         /// <returns></returns>
         [HttpDelete]
-        public IActionResult DeleteProduct(ProductSetting productSetting)
+        public async Task<IActionResult> DeleteProduct(ProductSetting productSetting)
         {
             try
             {
                 int DateIndex = 0;
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"DELETE FROM {ProductLog} WHERE ProductNumber = @ProductNumber";
-                    DateIndex = connection.Execute(sql, new
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        ProductNumber = productSetting.ProductNumber,
-                    });
-                }
+                        string sql = $"DELETE FROM {ProductLog} WHERE ProductNumber = @ProductNumber";
+                        DateIndex = connection.Execute(sql, new
+                        {
+                            ProductNumber = productSetting.ProductNumber,
+                        });
+                    }
+                });
                 if (DateIndex > 0)
                 {
                     return Ok($"{productSetting.ProductName}資訊，刪除成功!");
@@ -242,33 +264,36 @@ namespace ERPManagementSystem.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("/api/ProductAttachmentFile")]
-        public IActionResult PostProductAttachmentFile(string ProductNumber, string ProductName, IFormFile AttachmentFile)
+        public async Task<IActionResult> PostProductAttachmentFile(string ProductNumber, string ProductName, IFormFile AttachmentFile)
         {
             try
             {
                 if (AttachmentFile != null && !string.IsNullOrEmpty(ProductNumber) && !string.IsNullOrEmpty(ProductName))
                 {
-                    WorkPath += $"\\{ProductNumber}";
-                    if (!Directory.Exists(WorkPath))
+                    await Task.Run(() =>
                     {
-                        Directory.CreateDirectory($"{WorkPath}");
-                    }
-                    WorkPath += $"\\{AttachmentFile.FileName}";
-                    using (var stream = new FileStream(WorkPath, FileMode.Create))
-                    {
-                        var fs = new BinaryReader(AttachmentFile.OpenReadStream());
-                        int filelong = Convert.ToInt32(AttachmentFile.Length);
-                        var bytes = new byte[filelong];
-                        fs.Read(bytes, 0, filelong);
-                        stream.Write(bytes, 0, filelong);
-                        fs.Close();
-                        stream.Flush();
-                    }
-                    using (IDbConnection connection = new SqlConnection(SqlDB))
-                    {
-                        string sql = $"UPDATE {ProductLog} SET FileName = @FileName WHERE ProductNumber = @ProductNumber AND ProductName = @ProductName";
-                        connection.Execute(sql, new { FileName = AttachmentFile.FileName, ProductNumber = ProductNumber, ProductName = ProductName });
-                    }
+                        WorkPath += $"\\{ProductNumber}";
+                        if (!Directory.Exists(WorkPath))
+                        {
+                            Directory.CreateDirectory($"{WorkPath}");
+                        }
+                        WorkPath += $"\\{AttachmentFile.FileName}";
+                        using (var stream = new FileStream(WorkPath, FileMode.Create))
+                        {
+                            var fs = new BinaryReader(AttachmentFile.OpenReadStream());
+                            int filelong = Convert.ToInt32(AttachmentFile.Length);
+                            var bytes = new byte[filelong];
+                            fs.Read(bytes, 0, filelong);
+                            stream.Write(bytes, 0, filelong);
+                            fs.Close();
+                            stream.Flush();
+                        }
+                        using (IDbConnection connection = new SqlConnection(SqlDB))
+                        {
+                            string sql = $"UPDATE {ProductLog} SET FileName = @FileName WHERE ProductNumber = @ProductNumber AND ProductName = @ProductName";
+                            connection.Execute(sql, new { FileName = AttachmentFile.FileName, ProductNumber = ProductNumber, ProductName = ProductName });
+                        }
+                    });
                     return Ok($"{ProductName}檔案上傳成功");
                 }
                 else
@@ -301,7 +326,7 @@ namespace ERPManagementSystem.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("/api/ProductAttachmentFile")]
-        public IActionResult GetProductAttachmentFile(string ProductNumber, string ProductName, string AttachmentFile)
+        public async Task<IActionResult> GetProductAttachmentFile(string ProductNumber, string ProductName, string AttachmentFile)
         {
             try
             {
@@ -312,10 +337,13 @@ namespace ERPManagementSystem.Controllers
                     if (System.IO.File.Exists(WorkPath))
                     {
                         var memoryStream = new MemoryStream();
-                        FileStream stream = new FileStream(WorkPath, FileMode.Open);
-                        stream.CopyTo(memoryStream);
-                        memoryStream.Seek(0, SeekOrigin.Begin);
-                        stream.Close();
+                        await Task.Run(() =>
+                        {
+                            FileStream stream = new FileStream(WorkPath, FileMode.Open);
+                            stream.CopyTo(memoryStream);
+                            memoryStream.Seek(0, SeekOrigin.Begin);
+                            stream.Close();
+                        });
                         return new FileStreamResult(memoryStream, $"application/{FileExtension}") { FileDownloadName = AttachmentFile };
                     }
                     else

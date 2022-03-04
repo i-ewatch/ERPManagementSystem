@@ -33,16 +33,19 @@ namespace ERPManagementSystem.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public List<CustomerDirectorySetting> GetCompany()
+        public async Task<List<CustomerDirectorySetting>> GetCompany()
         {
             List<CustomerDirectorySetting> customerDirectorySettings = new List<CustomerDirectorySetting>();
             try
             {
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"SELECT * FROM  {CustomerDirectoryLog}";
-                    customerDirectorySettings = connection.Query<CustomerDirectorySetting>(sql).ToList();
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  {CustomerDirectoryLog}";
+                        customerDirectorySettings = connection.Query<CustomerDirectorySetting>(sql).ToList();
+                    }
+                });
                 return customerDirectorySettings;
             }
             catch (Exception)
@@ -57,16 +60,19 @@ namespace ERPManagementSystem.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("/api/CustomerDirectoryNumber/{CustomerDirectoryNumber}")]
-        public List<CustomerDirectorySetting> GetCompanyDirectoryNumber(string CustomerDirectoryNumber)
+        public async Task<List<CustomerDirectorySetting>> GetCompanyDirectoryNumber(string CustomerDirectoryNumber)
         {
             List<CustomerDirectorySetting> customerDirectorySettings = new List<CustomerDirectorySetting>();
             try
             {
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"SELECT * FROM  {CustomerDirectoryLog} WHERE DirectoryNumber = @CustomerDirectoryNumber";
-                    customerDirectorySettings = connection.Query<CustomerDirectorySetting>(sql, new { CustomerDirectoryNumber = CustomerDirectoryNumber }).ToList();
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  {CustomerDirectoryLog} WHERE DirectoryNumber = @CustomerDirectoryNumber";
+                        customerDirectorySettings = connection.Query<CustomerDirectorySetting>(sql, new { CustomerDirectoryNumber = CustomerDirectoryNumber }).ToList();
+                    }
+                });
                 return customerDirectorySettings;
             }
             catch (Exception)
@@ -81,16 +87,19 @@ namespace ERPManagementSystem.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("/api/DirectoryCustomer/{DirectoryCustomerNumber}")]
-        public List<CustomerDirectorySetting> GetCompanyNumber(string DirectoryCustomerNumber)
+        public async Task<List<CustomerDirectorySetting>> GetCompanyNumber(string DirectoryCustomerNumber)
         {
             List<CustomerDirectorySetting> companyDirectorySettings = new List<CustomerDirectorySetting>();
             try
             {
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"SELECT * FROM  {CustomerDirectoryLog} WHERE DirectoryCustomer = @DirectoryCustomerNumber";
-                    companyDirectorySettings = connection.Query<CustomerDirectorySetting>(sql, new { DirectoryCustomerNumber = DirectoryCustomerNumber }).ToList();
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  {CustomerDirectoryLog} WHERE DirectoryCustomer = @DirectoryCustomerNumber";
+                        companyDirectorySettings = connection.Query<CustomerDirectorySetting>(sql, new { DirectoryCustomerNumber = DirectoryCustomerNumber }).ToList();
+                    }
+                });
                 return companyDirectorySettings;
             }
             catch (Exception)
@@ -104,35 +113,41 @@ namespace ERPManagementSystem.Controllers
         /// <param name="customerDirectorySetting">客戶通訊錄資訊物件</param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult InserterCustomerDirectory(CustomerDirectorySetting customerDirectorySetting)
+        public async Task<IActionResult> InserterCustomerDirectory(CustomerDirectorySetting customerDirectorySetting)
         {
             try
             {
                 int DateIndex = 0;
                 List<CustomerDirectorySetting> customerDirectorySettings = new List<CustomerDirectorySetting>();
-                using (IDbConnection connection = new SqlConnection(SqlDB))
-                {
-                    string sql = $"SELECT * FROM  {CustomerDirectoryLog} WHERE DirectoryCustomer = @DirectoryCustomer AND DirectoryNumber = @DirectoryNumber";
-                    customerDirectorySettings = connection.Query<CustomerDirectorySetting>(sql, new { DirectoryCustomer = customerDirectorySetting.DirectoryCustomer, DirectoryNumber = customerDirectorySetting.DirectoryNumber }).ToList();
-                }
-                if (customerDirectorySettings.Count == 0)
+                await Task.Run(() =>
                 {
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        string sql = $"INSERT INTO {CustomerDirectoryLog}(DirectoryCustomer,DirectoryNumber,DirectoryName,JobTitle,Phone,MobilePhone,Email,Remark) VALUES " +
-                            $"(@DirectoryCustomer,@DirectoryNumber,@DirectoryName,@JobTitle,@Phone,@MobilePhone,@Email,@Remark)";
-                        DateIndex = connection.Execute(sql, new
-                        {
-                            DirectoryCustomer = customerDirectorySetting.DirectoryCustomer,
-                            DirectoryNumber = customerDirectorySetting.DirectoryNumber,
-                            DirectoryName = customerDirectorySetting.DirectoryName,
-                            JobTitle = customerDirectorySetting.JobTitle,
-                            Phone = customerDirectorySetting.Phone,
-                            MobilePhone = customerDirectorySetting.MobilePhone,
-                            Email = customerDirectorySetting.Email,
-                            Remark = customerDirectorySetting.Remark
-                        });
+                        string sql = $"SELECT * FROM  {CustomerDirectoryLog} WHERE DirectoryCustomer = @DirectoryCustomer AND DirectoryNumber = @DirectoryNumber";
+                        customerDirectorySettings = connection.Query<CustomerDirectorySetting>(sql, new { DirectoryCustomer = customerDirectorySetting.DirectoryCustomer, DirectoryNumber = customerDirectorySetting.DirectoryNumber }).ToList();
                     }
+                });
+                if (customerDirectorySettings.Count == 0)
+                {
+                    await Task.Run(() =>
+                    {
+                        using (IDbConnection connection = new SqlConnection(SqlDB))
+                        {
+                            string sql = $"INSERT INTO {CustomerDirectoryLog}(DirectoryCustomer,DirectoryNumber,DirectoryName,JobTitle,Phone,MobilePhone,Email,Remark) VALUES " +
+                                $"(@DirectoryCustomer,@DirectoryNumber,@DirectoryName,@JobTitle,@Phone,@MobilePhone,@Email,@Remark)";
+                            DateIndex = connection.Execute(sql, new
+                            {
+                                DirectoryCustomer = customerDirectorySetting.DirectoryCustomer,
+                                DirectoryNumber = customerDirectorySetting.DirectoryNumber,
+                                DirectoryName = customerDirectorySetting.DirectoryName,
+                                JobTitle = customerDirectorySetting.JobTitle,
+                                Phone = customerDirectorySetting.Phone,
+                                MobilePhone = customerDirectorySetting.MobilePhone,
+                                Email = customerDirectorySetting.Email,
+                                Remark = customerDirectorySetting.Remark
+                            });
+                        }
+                    });
                     if (DateIndex > 0)
                     {
                         return Ok($"{customerDirectorySetting.DirectoryName}資訊，上傳成功!");
@@ -158,27 +173,30 @@ namespace ERPManagementSystem.Controllers
         /// <param name="customerDirectorySetting">客戶通訊錄資訊物件</param>
         /// <returns></returns>
         [HttpPut]
-        public IActionResult UpdateCustomerDirectory(CustomerDirectorySetting customerDirectorySetting)
+        public async Task<IActionResult> UpdateCustomerDirectory(CustomerDirectorySetting customerDirectorySetting)
         {
             try
             {
                 int DateIndex = 0;
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"UPDATE {CustomerDirectoryLog} SET DirectoryCustomer = @DirectoryCustomer,DirectoryName = @DirectoryName,JobTitle = @JobTitle,Phone = @Phone,MobilePhone = @MobilePhone,Email = @Email,Remark = @Remark" +
-                        $" WHERE DirectoryCustomer = @DirectoryCustomer AND  DirectoryNumber = @DirectoryNumber";
-                    DateIndex = connection.Execute(sql, new
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        DirectoryCustomer = customerDirectorySetting.DirectoryCustomer,
-                        DirectoryNumber = customerDirectorySetting.DirectoryNumber,
-                        DirectoryName = customerDirectorySetting.DirectoryName,
-                        JobTitle = customerDirectorySetting.JobTitle,
-                        Phone = customerDirectorySetting.Phone,
-                        MobilePhone = customerDirectorySetting.MobilePhone,
-                        Email = customerDirectorySetting.Email,
-                        Remark = customerDirectorySetting.Remark
-                    });
-                }
+                        string sql = $"UPDATE {CustomerDirectoryLog} SET DirectoryCustomer = @DirectoryCustomer,DirectoryName = @DirectoryName,JobTitle = @JobTitle,Phone = @Phone,MobilePhone = @MobilePhone,Email = @Email,Remark = @Remark" +
+                            $" WHERE DirectoryCustomer = @DirectoryCustomer AND  DirectoryNumber = @DirectoryNumber";
+                        DateIndex = connection.Execute(sql, new
+                        {
+                            DirectoryCustomer = customerDirectorySetting.DirectoryCustomer,
+                            DirectoryNumber = customerDirectorySetting.DirectoryNumber,
+                            DirectoryName = customerDirectorySetting.DirectoryName,
+                            JobTitle = customerDirectorySetting.JobTitle,
+                            Phone = customerDirectorySetting.Phone,
+                            MobilePhone = customerDirectorySetting.MobilePhone,
+                            Email = customerDirectorySetting.Email,
+                            Remark = customerDirectorySetting.Remark
+                        });
+                    }
+                });
                 if (DateIndex > 0)
                 {
                     return Ok($"{customerDirectorySetting.DirectoryName}資訊，更新成功!");
@@ -199,20 +217,23 @@ namespace ERPManagementSystem.Controllers
         /// <param name="customerDirectorySetting">客戶通訊錄資訊物件</param>
         /// <returns></returns>
         [HttpDelete]
-        public IActionResult DeleteCustomerDirectory(CustomerDirectorySetting customerDirectorySetting)
+        public async Task<IActionResult> DeleteCustomerDirectory(CustomerDirectorySetting customerDirectorySetting)
         {
             try
             {
                 int DateIndex = 0;
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"DELETE FROM {CustomerDirectoryLog} WHERE DirectoryCustomer = @DirectoryCustomer AND  DirectoryNumber = @DirectoryNumber";
-                    DateIndex = connection.Execute(sql, new
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        DirectoryCustomer = customerDirectorySetting.DirectoryCustomer,
-                        DirectoryNumber = customerDirectorySetting.DirectoryNumber,
-                    });
-                }
+                        string sql = $"DELETE FROM {CustomerDirectoryLog} WHERE DirectoryCustomer = @DirectoryCustomer AND  DirectoryNumber = @DirectoryNumber";
+                        DateIndex = connection.Execute(sql, new
+                        {
+                            DirectoryCustomer = customerDirectorySetting.DirectoryCustomer,
+                            DirectoryNumber = customerDirectorySetting.DirectoryNumber,
+                        });
+                    }
+                });
                 if (DateIndex > 0)
                 {
                     return Ok($"{customerDirectorySetting.DirectoryName}資訊，刪除成功!");
@@ -236,33 +257,36 @@ namespace ERPManagementSystem.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("/api/CustomerDirectoryAttachmentFile")]
-        public IActionResult PostCustomerDirectoryAttachmentFile(string DirectoryCustomer, string DirectoryNumber, IFormFile AttachmentFile)
+        public async Task<IActionResult> PostCustomerDirectoryAttachmentFile(string DirectoryCustomer, string DirectoryNumber, IFormFile AttachmentFile)
         {
             try
             {
                 if (AttachmentFile != null && !string.IsNullOrEmpty(DirectoryCustomer) && !string.IsNullOrEmpty(DirectoryNumber))
                 {
-                    WorkPath += $"\\{DirectoryCustomer}";
-                    if (!Directory.Exists(WorkPath))
+                    await Task.Run(() =>
                     {
-                        Directory.CreateDirectory($"{WorkPath}");
-                    }
-                    WorkPath += $"\\{AttachmentFile.FileName}";
-                    using (var stream = new FileStream(WorkPath, FileMode.Create,FileAccess.Write))
-                    {
-                        var fs = new BinaryReader(AttachmentFile.OpenReadStream());
-                        int filelong = Convert.ToInt32(AttachmentFile.Length);
-                        var bytes = new byte[filelong];
-                        fs.Read(bytes, 0, filelong);
-                        stream.Write(bytes, 0, filelong);
-                        fs.Close();
-                        stream.Flush();
-                    }
-                    using (IDbConnection connection = new SqlConnection(SqlDB))
-                    {
-                        string sql = $"UPDATE {CustomerDirectoryLog} SET FileName = @FileName WHERE DirectoryCustomer = @DirectoryCustomer AND DirectoryNumber = @DirectoryNumber";
-                        connection.Execute(sql, new { FileName = AttachmentFile.FileName, DirectoryCustomer = DirectoryCustomer, DirectoryNumber = DirectoryNumber });
-                    }
+                        WorkPath += $"\\{DirectoryCustomer}";
+                        if (!Directory.Exists(WorkPath))
+                        {
+                            Directory.CreateDirectory($"{WorkPath}");
+                        }
+                        WorkPath += $"\\{AttachmentFile.FileName}";
+                        using (var stream = new FileStream(WorkPath, FileMode.Create, FileAccess.Write))
+                        {
+                            var fs = new BinaryReader(AttachmentFile.OpenReadStream());
+                            int filelong = Convert.ToInt32(AttachmentFile.Length);
+                            var bytes = new byte[filelong];
+                            fs.Read(bytes, 0, filelong);
+                            stream.Write(bytes, 0, filelong);
+                            fs.Close();
+                            stream.Flush();
+                        }
+                        using (IDbConnection connection = new SqlConnection(SqlDB))
+                        {
+                            string sql = $"UPDATE {CustomerDirectoryLog} SET FileName = @FileName WHERE DirectoryCustomer = @DirectoryCustomer AND DirectoryNumber = @DirectoryNumber";
+                            connection.Execute(sql, new { FileName = AttachmentFile.FileName, DirectoryCustomer = DirectoryCustomer, DirectoryNumber = DirectoryNumber });
+                        }
+                    });
                     return Ok($"{DirectoryNumber}檔案上傳成功");
                 }
                 else
@@ -302,7 +326,7 @@ namespace ERPManagementSystem.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("/api/CustomerDirectoryAttachmentFile")]
-        public IActionResult GetCustomerDirectoryAttachmentFile(string DirectoryCustomer, string DirectoryNumber, string AttachmentFile)
+        public async Task<IActionResult> GetCustomerDirectoryAttachmentFile(string DirectoryCustomer, string DirectoryNumber, string AttachmentFile)
         {
             try
             {
@@ -313,10 +337,13 @@ namespace ERPManagementSystem.Controllers
                     if (System.IO.File.Exists(WorkPath))
                     {
                         var memoryStream = new MemoryStream();
-                        FileStream stream = new FileStream(WorkPath, FileMode.Open);
-                        stream.CopyTo(memoryStream);
-                        memoryStream.Seek(0, SeekOrigin.Begin);
-                        stream.Close();
+                        await Task.Run(() =>
+                        {
+                            FileStream stream = new FileStream(WorkPath, FileMode.Open);
+                            stream.CopyTo(memoryStream);
+                            memoryStream.Seek(0, SeekOrigin.Begin);
+                            stream.Close();
+                        });
                         return new FileStreamResult(memoryStream, $"application/{FileExtension}") { FileDownloadName = AttachmentFile };
                     }
                     else

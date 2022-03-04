@@ -9,6 +9,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ERPManagementSystem.Controllers
 {
@@ -32,16 +33,19 @@ namespace ERPManagementSystem.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public List<CustomerSetting> GetCustomer()
+        public async Task<List<CustomerSetting>> GetCustomer()
         {
             List<CustomerSetting> customerSettings = new List<CustomerSetting>();
             try
             {
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"SELECT * FROM  {CustomerLog}";
-                    customerSettings = connection.Query<CustomerSetting>(sql).ToList();
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  {CustomerLog}";
+                        customerSettings = connection.Query<CustomerSetting>(sql).ToList();
+                    }
+                });
                 return customerSettings;
             }
             catch (Exception)
@@ -56,16 +60,19 @@ namespace ERPManagementSystem.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("/api/CustomerNumber/{CustomerNumber}")]
-        public List<CustomerSetting> GetCustomerNumber(string CustomerNumber)
+        public async Task<List<CustomerSetting>> GetCustomerNumber(string CustomerNumber)
         {
             List<CustomerSetting> customerSettings = new List<CustomerSetting>();
             try
             {
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"SELECT * FROM  {CustomerLog} WHERE CustomerNumber = @CustomerNumber";
-                    customerSettings = connection.Query<CustomerSetting>(sql, new { CustomerNumber = CustomerNumber }).ToList();
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  {CustomerLog} WHERE CustomerNumber = @CustomerNumber";
+                        customerSettings = connection.Query<CustomerSetting>(sql, new { CustomerNumber = CustomerNumber }).ToList();
+                    }
+                });
                 return customerSettings;
             }
             catch (Exception)
@@ -79,38 +86,44 @@ namespace ERPManagementSystem.Controllers
         /// <param name="customerSetting">客戶資訊物件</param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult InserterCustomer(CustomerSetting customerSetting)
+        public async Task<IActionResult> InserterCustomer(CustomerSetting customerSetting)
         {
             try
             {
                 List<CustomerSetting> customerSettings = new List<CustomerSetting>();
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"SELECT * FROM  {CustomerLog} WHERE CustomerNumber = @CustomerNumber";
-                    customerSettings = connection.Query<CustomerSetting>(sql, new { CustomerNumber = customerSetting.CustomerNumber }).ToList();
-                }
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  {CustomerLog} WHERE CustomerNumber = @CustomerNumber";
+                        customerSettings = connection.Query<CustomerSetting>(sql, new { CustomerNumber = customerSetting.CustomerNumber }).ToList();
+                    }
+                });
                 if (customerSettings.Count == 0)
                 {
                     int DateIndex = 0;
-                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    await Task.Run(() =>
                     {
-                        string sql = $"INSERT INTO {CustomerLog} (CustomerNumber,CustomerName,UniformNumbers,Phone,Fax,RemittanceAccount,ContactName,ContactEmail,ContactPhone,CheckoutType) VALUES " +
-                            $"(@CustomerNumber,@CustomerName,@UniformNumbers,@Phone,@Fax,@RemittanceAccount,@ContactName,@ContactEmail" +
-                            $",@ContactPhone,@CheckoutType)";
-                        DateIndex = connection.Execute(sql, new
+                        using (IDbConnection connection = new SqlConnection(SqlDB))
                         {
-                            CustomerNumber = customerSetting.CustomerNumber,
-                            CustomerName = customerSetting.CustomerName,
-                            UniformNumbers = customerSetting.UniformNumbers,
-                            Phone = customerSetting.Phone,
-                            Fax = customerSetting.Fax,
-                            RemittanceAccount = customerSetting.RemittanceAccount,
-                            ContactName = customerSetting.ContactName,
-                            ContactEmail = customerSetting.ContactEmail,
-                            ContactPhone = customerSetting.ContactPhone,
-                            CheckoutType = customerSetting.CheckoutType
-                        });
-                    }
+                            string sql = $"INSERT INTO {CustomerLog} (CustomerNumber,CustomerName,UniformNumbers,Phone,Fax,RemittanceAccount,ContactName,ContactEmail,ContactPhone,CheckoutType) VALUES " +
+                                $"(@CustomerNumber,@CustomerName,@UniformNumbers,@Phone,@Fax,@RemittanceAccount,@ContactName,@ContactEmail" +
+                                $",@ContactPhone,@CheckoutType)";
+                            DateIndex = connection.Execute(sql, new
+                            {
+                                CustomerNumber = customerSetting.CustomerNumber,
+                                CustomerName = customerSetting.CustomerName,
+                                UniformNumbers = customerSetting.UniformNumbers,
+                                Phone = customerSetting.Phone,
+                                Fax = customerSetting.Fax,
+                                RemittanceAccount = customerSetting.RemittanceAccount,
+                                ContactName = customerSetting.ContactName,
+                                ContactEmail = customerSetting.ContactEmail,
+                                ContactPhone = customerSetting.ContactPhone,
+                                CheckoutType = customerSetting.CheckoutType
+                            });
+                        }
+                    });
                     if (DateIndex > 0)
                     {
                         return Ok($"{customerSetting.CustomerName}資訊，上傳成功!");
@@ -137,30 +150,33 @@ namespace ERPManagementSystem.Controllers
         /// <param name="customerSetting">客戶資訊物件</param>
         /// <returns></returns>
         [HttpPut]
-        public IActionResult UpdateCustomer(CustomerSetting customerSetting)
+        public async Task<IActionResult> UpdateCustomer(CustomerSetting customerSetting)
         {
             try
             {
                 int DateIndex = 0;
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"UPDATE {CustomerLog} SET CustomerName = @CustomerName,UniformNumbers = @UniformNumbers,Phone = @Phone,Fax = @Fax,RemittanceAccount = @RemittanceAccount," +
-                        $"ContactName = @ContactName,ContactEmail = @ContactEmail,ContactPhone = @ContactPhone,CheckoutType = @CheckoutType" +
-                        $" WHERE CustomerNumber = @CustomerNumber";
-                    DateIndex = connection.Execute(sql, new
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        CustomerNumber = customerSetting.CustomerNumber,
-                        CustomerName = customerSetting.CustomerName,
-                        UniformNumbers = customerSetting.UniformNumbers,
-                        Phone = customerSetting.Phone,
-                        Fax = customerSetting.Fax,
-                        RemittanceAccount = customerSetting.RemittanceAccount,
-                        ContactName = customerSetting.ContactName,
-                        ContactEmail = customerSetting.ContactEmail,
-                        ContactPhone = customerSetting.ContactPhone,
-                        CheckoutType = customerSetting.CheckoutType
-                    });
-                }
+                        string sql = $"UPDATE {CustomerLog} SET CustomerName = @CustomerName,UniformNumbers = @UniformNumbers,Phone = @Phone,Fax = @Fax,RemittanceAccount = @RemittanceAccount," +
+                            $"ContactName = @ContactName,ContactEmail = @ContactEmail,ContactPhone = @ContactPhone,CheckoutType = @CheckoutType" +
+                            $" WHERE CustomerNumber = @CustomerNumber";
+                        DateIndex = connection.Execute(sql, new
+                        {
+                            CustomerNumber = customerSetting.CustomerNumber,
+                            CustomerName = customerSetting.CustomerName,
+                            UniformNumbers = customerSetting.UniformNumbers,
+                            Phone = customerSetting.Phone,
+                            Fax = customerSetting.Fax,
+                            RemittanceAccount = customerSetting.RemittanceAccount,
+                            ContactName = customerSetting.ContactName,
+                            ContactEmail = customerSetting.ContactEmail,
+                            ContactPhone = customerSetting.ContactPhone,
+                            CheckoutType = customerSetting.CheckoutType
+                        });
+                    }
+                });
                 if (DateIndex > 0)
                 {
                     return Ok($"{customerSetting.CustomerName}資訊，更新成功!");
@@ -181,19 +197,22 @@ namespace ERPManagementSystem.Controllers
         /// <param name="customerSetting">客戶資訊物件</param>
         /// <returns></returns>
         [HttpDelete]
-        public IActionResult DeleteCustomer(CustomerSetting customerSetting)
+        public async Task<IActionResult> DeleteCustomer(CustomerSetting customerSetting)
         {
             try
             {
                 int DateIndex = 0;
-                using (IDbConnection connection = new SqlConnection(SqlDB))
+                await Task.Run(() =>
                 {
-                    string sql = $"DELETE FROM {CustomerLog} WHERE CustomerNumber = @CustomerNumber";
-                    DateIndex = connection.Execute(sql, new
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        CustomerNumber = customerSetting.CustomerNumber
-                    });
-                }
+                        string sql = $"DELETE FROM {CustomerLog} WHERE CustomerNumber = @CustomerNumber";
+                        DateIndex = connection.Execute(sql, new
+                        {
+                            CustomerNumber = customerSetting.CustomerNumber
+                        });
+                    }
+                });
                 if (DateIndex > 0)
                 {
                     return Ok($"{customerSetting.CustomerName}資訊，刪除成功!");
@@ -217,33 +236,36 @@ namespace ERPManagementSystem.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("/api/CustomerAttachmentFile")]
-        public IActionResult PostCompanyAttachmentFile(string CustomerNumber, string CustomerName, IFormFile AttachmentFile)
+        public async Task<IActionResult> PostCompanyAttachmentFile(string CustomerNumber, string CustomerName, IFormFile AttachmentFile)
         {
             try
             {
                 if (AttachmentFile != null && !string.IsNullOrEmpty(CustomerNumber) && !string.IsNullOrEmpty(CustomerName))
                 {
-                    WorkPath += $"\\{CustomerNumber}";
-                    if (!Directory.Exists(WorkPath))
+                    await Task.Run(() =>
                     {
-                        Directory.CreateDirectory($"{WorkPath}");
-                    }
-                    WorkPath += $"\\{AttachmentFile.FileName}";
-                    using (var stream = new FileStream(WorkPath, FileMode.Create))
-                    {
-                        var fs = new BinaryReader(AttachmentFile.OpenReadStream());
-                        int filelong = Convert.ToInt32(AttachmentFile.Length);
-                        var bytes = new byte[filelong];
-                        fs.Read(bytes, 0, filelong);
-                        stream.Write(bytes, 0, filelong);
-                        fs.Close();
-                        stream.Flush();
-                    }
-                    using (IDbConnection connection = new SqlConnection(SqlDB))
-                    {
-                        string sql = $"UPDATE {CustomerLog} SET FileName = @FileName WHERE CustomerNumber = @CustomerNumber AND CustomerName = @CustomerName";
-                        connection.Execute(sql, new { FileName = AttachmentFile.FileName, CustomerNumber = CustomerNumber, CustomerName = CustomerName });
-                    }
+                        WorkPath += $"\\{CustomerNumber}";
+                        if (!Directory.Exists(WorkPath))
+                        {
+                            Directory.CreateDirectory($"{WorkPath}");
+                        }
+                        WorkPath += $"\\{AttachmentFile.FileName}";
+                        using (var stream = new FileStream(WorkPath, FileMode.Create))
+                        {
+                            var fs = new BinaryReader(AttachmentFile.OpenReadStream());
+                            int filelong = Convert.ToInt32(AttachmentFile.Length);
+                            var bytes = new byte[filelong];
+                            fs.Read(bytes, 0, filelong);
+                            stream.Write(bytes, 0, filelong);
+                            fs.Close();
+                            stream.Flush();
+                        }
+                        using (IDbConnection connection = new SqlConnection(SqlDB))
+                        {
+                            string sql = $"UPDATE {CustomerLog} SET FileName = @FileName WHERE CustomerNumber = @CustomerNumber AND CustomerName = @CustomerName";
+                            connection.Execute(sql, new { FileName = AttachmentFile.FileName, CustomerNumber = CustomerNumber, CustomerName = CustomerName });
+                        }
+                    });
                     return Ok($"{CustomerName}檔案上傳成功");
                 }
                 else
@@ -283,7 +305,7 @@ namespace ERPManagementSystem.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("/api/CustomerAttachmentFile")]
-        public IActionResult GetCompanyAttachmentFile(string CustomerNumber, string CustomerName, string AttachmentFile)
+        public async Task<IActionResult> GetCompanyAttachmentFile(string CustomerNumber, string CustomerName, string AttachmentFile)
         {
             try
             {
@@ -294,10 +316,13 @@ namespace ERPManagementSystem.Controllers
                     if (System.IO.File.Exists(WorkPath))
                     {
                         var memoryStream = new MemoryStream();
-                        FileStream stream = new FileStream(WorkPath, FileMode.Open);
-                        stream.CopyTo(memoryStream);
-                        memoryStream.Seek(0, SeekOrigin.Begin);
-                        stream.Close();
+                        await Task.Run(() =>
+                        {
+                            FileStream stream = new FileStream(WorkPath, FileMode.Open);
+                            stream.CopyTo(memoryStream);
+                            memoryStream.Seek(0, SeekOrigin.Begin);
+                            stream.Close();
+                        });
                         return new FileStreamResult(memoryStream, $"application/{FileExtension}") { FileDownloadName = AttachmentFile };
                     }
                     else
