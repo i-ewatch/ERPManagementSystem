@@ -26,7 +26,7 @@ namespace ERPManagementSystem.Controllers
         public PurchaseController(IConfiguration configuration)
         {
             _configuration = configuration;
-            WorkPath = "產品";
+            WorkPath = "進貨";
             SqlDB = _configuration["SqlDB"];
         }
 
@@ -168,7 +168,35 @@ namespace ERPManagementSystem.Controllers
                 return result;
             }
         }
-
+        /// <summary>
+        /// 查詢全部【單】【進貨】或【進貨退出】進貨父資料
+        /// </summary>
+        /// <param name="PurchaseNumber">進貨單號(YYYYmm)</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("/api/Purchase/PurchaseNumber")]
+        public async Task<List<PurchaseMainSetting>> GetPurchase(string PurchaseNumber)
+        {
+            List<PurchaseMainSetting> purchaseMains = new List<PurchaseMainSetting>();
+            try
+            {
+                await Task.Run(() =>
+                {
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  PurchaseMainSetting " +
+                                        $"where PurchaseNumber >= @PurchaseNumberStart AND  PurchaseNumber <= @PurchaseNumberEnd " +
+                                        $"order by PurchaseFlag,PurchaseNumber ";
+                        purchaseMains = connection.Query<PurchaseMainSetting>(sql, new { PurchaseNumberStart = PurchaseNumber + "010000", PurchaseNumberEnd = PurchaseNumber + "319999" }).ToList();
+                    }
+                });
+                return purchaseMains;
+            }
+            catch (Exception)
+            {
+                return purchaseMains;
+            }
+        }
         /// <summary>
         /// 進貨父子新增
         /// </summary>
@@ -215,7 +243,7 @@ namespace ERPManagementSystem.Controllers
                         purchaseSetting.Tax = Math.Round(mTotal * 0.05, 0);
                     }
                     purchaseSetting.TotalTax = mTotal + purchaseSetting.Tax;
-                    using (var ts = new TransactionScope())
+                    //using (var ts = new TransactionScope())
                     {
                         using (IDbConnection connection = new SqlConnection(SqlDB))     // 新增父
                         {
@@ -229,7 +257,7 @@ namespace ERPManagementSystem.Controllers
                                             $"Values(@PurchaseFlag , @PurchaseNumber , @PurchaseNo , @ProductNumber , @ProductName , @ProductUnit , @ProductQty , @ProductPrice , @ProductTotal)";
                             connection.Execute(sql, purchaseSetting.PurchaseSub);
                         }
-                        ts.Complete();
+                        //ts.Complete();
                     }
                     using (IDbConnection connection = new SqlConnection(SqlDB))     // 查詢父
                     {
@@ -263,7 +291,7 @@ namespace ERPManagementSystem.Controllers
             {
                 int DateMainIndex = 0;
                 int DateSubIndex = 0;
-                using (var ts = new TransactionScope())
+                //using (var ts = new TransactionScope())
                 {
                     await Task.Run(() =>
                     {
@@ -298,7 +326,7 @@ namespace ERPManagementSystem.Controllers
                     {
                         return BadRequest($"{purchaseSetting.PurchaseNumber}資訊，更新父資料失敗");
                     }
-                    ts.Complete();
+                    //ts.Complete();
                 }
             }
             catch (Exception)
@@ -314,7 +342,7 @@ namespace ERPManagementSystem.Controllers
             try
             {
                 int DateMainIndex = 0;
-                using (var ts = new TransactionScope())
+                //using (var ts = new TransactionScope())
                 {
                     await Task.Run(() =>
                     {
@@ -340,12 +368,129 @@ namespace ERPManagementSystem.Controllers
                     {
                         return BadRequest($"{PurchaseNumber}資訊，刪除資料失敗");
                     }
-                    ts.Complete();
+                    //ts.Complete();
                 }
             }
             catch (Exception)
             {
                 return BadRequest($"{PurchaseNumber}資訊，更新失敗");
+            }
+        }
+        /// <summary>
+        /// 上傳檔案
+        /// </summary>
+        /// <param name="PurchaseFlag"></param>
+        /// <param name="PurchaseCompanyNumber"></param>
+        /// <param name="PurchaseDate"></param>
+        /// <param name="PurchaseNumber"></param>
+        /// <param name="AttachmentFile"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("/api/PurchaseAttachmentFile")]
+        public async Task<IActionResult> PostPurchaseAttachmenFile(int PurchaseFlag,string PurchaseCompanyNumber, DateTime PurchaseDate,string PurchaseNumber, IFormFile AttachmentFile)
+        {
+            try
+            {
+                if (AttachmentFile != null)
+                {
+                    await Task.Run(() =>
+                    {
+                        WorkPath += $"\\{PurchaseCompanyNumber}";
+                        if (!Directory.Exists(WorkPath))
+                        {
+                            Directory.CreateDirectory($"{WorkPath}");
+                        }
+                        WorkPath += $"\\{AttachmentFile.FileName}";
+                        using (var stream = new FileStream(WorkPath, FileMode.Create))
+                        {
+                            var fs = new BinaryReader(AttachmentFile.OpenReadStream());
+                            int filelong = Convert.ToInt32(AttachmentFile.Length);
+                            var bytes = new byte[filelong];
+                            fs.Read(bytes, 0, filelong);
+                            stream.Write(bytes, 0, filelong);
+                            fs.Close();
+                            stream.Flush();
+                        }
+                        List<PurchaseMainSetting> CheckPurchaseNumber = new List<PurchaseMainSetting>();
+                        string ResultPurchaseNumber;
+                        if (PurchaseNumber == null)
+                        {
+                            using (IDbConnection connection = new SqlConnection(SqlDB))     // 查詢當天最後一筆單號
+                            {
+                                string sql = $"SELECT top 1 * FROM  PurchaseMainSetting " +
+                                                $"where PurchaseFlag=@PurchaseFlag and PurchaseNumber like @PurchaseNumber " +
+                                                $"order by PurchaseNumber desc ";
+                                CheckPurchaseNumber = connection.Query<PurchaseMainSetting>(sql, new { PurchaseFlag = PurchaseFlag, PurchaseNumber = PurchaseDate.ToString("yyyyMMdd") + "%" }).ToList();
+                            }
+                            if (CheckPurchaseNumber.Count == 0)
+                            {
+                                ResultPurchaseNumber = PurchaseDate.ToString("yyyyMMdd") + "0001";     // 當天無進貨，由 0001開始
+                            }
+                            else
+                            {
+                                ResultPurchaseNumber = PurchaseDate.ToString("yyyyMMdd") + (Convert.ToInt32(CheckPurchaseNumber[0].PurchaseNumber.Substring(8, 4)) + 1).ToString().PadLeft(4, '0');     // 當天最後一筆進貨單號+1
+                            }
+                            PurchaseNumber = ResultPurchaseNumber;
+                        }
+                        using (IDbConnection connection = new SqlConnection(SqlDB))
+                        {
+                            string sql = $"UPDATE PurchaseMainSetting SET FileName = @FileName  WHERE PurchaseFlag=@PurchaseFlag and PurchaseNumber=@PurchaseNumber";
+                            connection.Execute(sql, new { FileName = AttachmentFile.FileName, PurchaseFlag = PurchaseFlag, PurchaseNumber = PurchaseNumber });
+                        }
+                    });
+                    return Ok($"{AttachmentFile.FileName} 檔案上傳成功");
+                }
+                else
+                {
+                    return BadRequest($"{AttachmentFile.FileName} 檔案上傳失敗");
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest($"{AttachmentFile.FileName} 檔案上傳失敗");
+            }
+        }
+        /// <summary>
+        /// 下載檔案
+        /// </summary>
+        /// <param name="PurchaseCompanyNumber"></param>
+        /// <param name="AttachmentFile"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("/api/PurchaseAttachmentFile")]
+        public async Task<IActionResult> GetPurchaseAttachmenFile(string PurchaseCompanyNumber, string AttachmentFile)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(PurchaseCompanyNumber) && !string.IsNullOrEmpty(AttachmentFile))
+                {
+                    string FileExtension = AttachmentFile.Split('.')[1];
+                    WorkPath += $"\\{PurchaseCompanyNumber}\\{AttachmentFile}";
+                    if (System.IO.File.Exists(WorkPath))
+                    {
+                        var memoryStream = new MemoryStream();
+                        await Task.Run(() =>
+                        {
+                            FileStream stream = new FileStream(WorkPath, FileMode.Open);
+                            stream.CopyTo(memoryStream);
+                            memoryStream.Seek(0, SeekOrigin.Begin);
+                            stream.Close();
+                        });
+                        return new FileStreamResult(memoryStream, $"application/{FileExtension}") { FileDownloadName = AttachmentFile };
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+                }
+                else
+                {
+                    return BadRequest($"{AttachmentFile} 檔案下載失敗");
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest($"{AttachmentFile} 檔案下載失敗");
             }
         }
     }
