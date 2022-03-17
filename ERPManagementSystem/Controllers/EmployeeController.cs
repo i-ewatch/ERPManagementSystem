@@ -102,15 +102,17 @@ namespace ERPManagementSystem.Controllers
                     {
                         using (IDbConnection connection = new SqlConnection(SqlDB))
                         {
-                            string sql = $"INSERT INTO {EmployeeLog}(EmployeeNumber,EmployeeName,Phone,Address,Token) VALUES " +
-                                $"(@EmployeeNumber,@EmployeeName,@Phone,@Address,@Token)";
+                            string sql = $"INSERT INTO {EmployeeLog}(EmployeeNumber,EmployeeName,Phone,Address,Token,AccountNo,PassWord) VALUES " +
+                                $"(@EmployeeNumber,@EmployeeName,@Phone,@Address,@Token,@AccountNo,@PassWord)";
                             DateIndex = connection.Execute(sql, new
                             {
                                 EmployeeNumber = employeeSetting.EmployeeNumber,
                                 EmployeeName = employeeSetting.EmployeeName,
                                 Phone = employeeSetting.Phone,
                                 Address = employeeSetting.Address,
-                                Token = employeeSetting.Token
+                                Token = employeeSetting.Token,
+                                AccountNo = employeeSetting.AccountNo,
+                                PassWord = employeeSetting.PassWord
                             });
                         }
                     });
@@ -149,7 +151,7 @@ namespace ERPManagementSystem.Controllers
                 {
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        string sql = $"UPDATE {EmployeeLog} SET EmployeeName = @EmployeeName,Phone = @Phone,Address = @Address,Token = @Token" +
+                        string sql = $"UPDATE {EmployeeLog} SET EmployeeName = @EmployeeName,Phone = @Phone,Address = @Address,Token = @Token,AccountNo = @AccountNo,PassWord = @PassWord" +
                             $" WHERE EmployeeNumber = @EmployeeNumber";
                         DateIndex = connection.Execute(sql, new
                         {
@@ -157,7 +159,9 @@ namespace ERPManagementSystem.Controllers
                             EmployeeName = employeeSetting.EmployeeName,
                             Phone = employeeSetting.Phone,
                             Address = employeeSetting.Address,
-                            Token = employeeSetting.Token
+                            Token = employeeSetting.Token,
+                            AccountNo = employeeSetting.AccountNo,
+                            PassWord = employeeSetting.PassWord
                         });
                     }
                 });
@@ -173,6 +177,36 @@ namespace ERPManagementSystem.Controllers
             catch (Exception)
             {
                 return BadRequest($"{employeeSetting.EmployeeName}資訊，更新失敗");
+            }
+        }
+        /// <summary>
+        /// 員工登入
+        /// </summary>
+        /// <param name="employeeSetting"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("/api/EmployeeLogin")]
+        public async Task<List<EmployeeSetting>> LoginEmployee(string Account, string PassWord)
+        {
+            List<EmployeeSetting> EmployeeSetting = new List<EmployeeSetting>();
+            try
+            {
+                await Task.Run(() =>
+                {
+                    if (!string.IsNullOrEmpty(Account) && !string.IsNullOrEmpty(PassWord))
+                    {
+                        using (IDbConnection connection = new SqlConnection(SqlDB))
+                        {
+                            string sql = $"SELECT * FROM  {EmployeeLog} WHERE AccountNo = @AccountNo AND PassWord = @PassWord";
+                            EmployeeSetting = connection.Query<EmployeeSetting>(sql, new { AccountNo = Account, PassWord = PassWord }).ToList();
+                        }
+                    }
+                });
+                return EmployeeSetting;
+            }
+            catch (Exception)
+            {
+                return EmployeeSetting;
             }
         }
         /// <summary>

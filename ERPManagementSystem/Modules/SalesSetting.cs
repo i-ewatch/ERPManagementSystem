@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace ERPManagementSystem.Modules
 {
-    public class SalesMainSetting
+    public class SalesSetting
     {
         /// <summary>
         /// 銷貨旗標 
         /// </summary>
-        [Range(3,4,ErrorMessage ="3=銷貨，4=銷貨退回")]
+        [Range(3, 4, ErrorMessage = "3=銷貨，4=銷貨退回")]
         public int SalesFlag { get; set; }
         /// <summary>
         /// 銷貨單號
@@ -62,5 +62,6 @@ namespace ERPManagementSystem.Modules
         /// 附件檔名
         /// </summary>
         public string FileName { get; set; }
+        public List<SalesSubSetting> SalesSub { get; set; }
     }
 }

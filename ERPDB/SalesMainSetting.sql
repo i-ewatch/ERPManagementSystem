@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[SaleMainSetting]
+﻿CREATE TABLE [dbo].[SalesMainSetting]
 (
 	[SalesFlag] INT NOT NULL, 
     [SalesNumber] NVARCHAR(12) NOT NULL, 
@@ -11,7 +11,7 @@
     [Total] FLOAT NOT NULL DEFAULT 0, 
     [Tax] FLOAT NOT NULL DEFAULT 0, 
     [TotalTax] FLOAT NOT NULL DEFAULT 0, 
-    [Posting] FLOAT NOT NULL DEFAULT 0, 
+    [Posting] INT NOT NULL DEFAULT 0, 
     [FileName] NVARCHAR(50) NULL, 
     CONSTRAINT [PK_SaleMainSetting] PRIMARY KEY ([SalesFlag], [SalesNumber]) 
 )

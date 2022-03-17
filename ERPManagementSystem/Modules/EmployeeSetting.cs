@@ -33,5 +33,15 @@ namespace ERPManagementSystem.Modules
         /// </summary>
         [Range(0, 1, ErrorMessage = "0=一般使用者，1=管理員")]
         public int Token { get; set; }
+        /// <summary>
+        /// 帳號
+        /// </summary>
+        [StringLength(20,ErrorMessage ="字串最多20個字")]
+        public string AccountNo { get; set; }
+        /// <summary>
+        /// 密碼
+        /// </summary>
+        [StringLength(20, ErrorMessage = "字串最多20個字")]
+        public string PassWord { get; set; }
     }
 }

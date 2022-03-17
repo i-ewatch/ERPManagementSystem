@@ -11,7 +11,7 @@ namespace ERPManagementSystem.Modules
         /// <summary>
         /// 銷貨旗標 
         /// </summary>
-        [Range(1, 2, ErrorMessage = "3=銷貨，4=銷貨退回")]
+        [Range(3, 4, ErrorMessage = "3=銷貨，4=銷貨退回")]
         public int SalesFlag { get; set; }
         /// <summary>
         /// 銷貨單號
@@ -20,7 +20,7 @@ namespace ERPManagementSystem.Modules
         /// <summary>
         /// 銷貨明細序號
         /// </summary>
-        public int PurchaseNo { get; set; }
+        public int SalesNo { get; set; }
         /// <summary>
         /// 產品編號
         /// </summary>

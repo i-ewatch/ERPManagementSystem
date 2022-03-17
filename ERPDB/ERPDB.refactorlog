@@ -105,4 +105,46 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="FileName" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="06288e00-ac89-4314-ad73-ad946304ca63" ChangeDateTime="03/14/2022 07:00:06">
+    <Property Name="ElementName" Value="[dbo].[EmployeeSetting].[Account]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[EmployeeSetting]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="AccountNo" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c2983da6-8259-4ecb-bf62-ffbb3e7db990" ChangeDateTime="03/15/2022 09:39:03">
+    <Property Name="ElementName" Value="[dbo].[PaymentSetting].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[PaymentSetting]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PaymentNumber" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="26ee6e75-8629-4934-b917-ce83a371ed58" ChangeDateTime="03/15/2022 09:42:21">
+    <Property Name="ElementName" Value="[dbo].[PaymentSetting].[Transfer]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[PaymentSetting]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TransferD" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ef10b556-35f1-483b-b5c1-2a3a5babfc6a" ChangeDateTime="03/15/2022 09:43:13">
+    <Property Name="ElementName" Value="[dbo].[PaymentItemSetting].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[PaymentItemSetting]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PaymentItemNo" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3ae1e5b4-4cbf-4de8-83eb-1899f028710e" ChangeDateTime="03/16/2022 08:09:03">
+    <Property Name="ElementName" Value="[dbo].[PaymentSetting].[TransferD]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[PaymentSetting]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TransferDate" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="23abb21d-de4c-40c6-90a5-9f8b5228d1a3" ChangeDateTime="03/17/2022 06:57:13">
+    <Property Name="ElementName" Value="[dbo].[SalesSubSetting].[PurchaseNo]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[SalesSubSetting]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SalesNo" />
+  </Operation>
 </Operations>

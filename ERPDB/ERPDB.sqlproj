@@ -67,8 +67,10 @@
     <Build Include="CustomerDirectorySetting.sql" />
     <Build Include="PurchaseMainSetting.sql" />
     <Build Include="PurchaseSubSetting.sql" />
-    <Build Include="SaleMainSetting.sql" />
+    <Build Include="SalesMainSetting.sql" />
     <Build Include="SalesSubSetting.sql" />
+    <Build Include="PaymentSetting.sql" />
+    <Build Include="PaymentItemSetting.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="ERPDB.refactorlog" />
