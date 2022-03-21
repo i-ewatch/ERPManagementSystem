@@ -197,7 +197,34 @@ namespace ERPManagementSystem.Controllers
                 return salesMains;
             }
         }
-
+        /// <summary>
+        /// 查詢全部未過帳【單】【銷貨】或【銷貨退出】進貨父資料
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("/api/Sales/SalesPosting")]
+        public async Task<List<SalesMainSetting>> GetSalesPosting()
+        {
+            List<SalesMainSetting> salesMains = new List<SalesMainSetting>();
+            try
+            {
+                await Task.Run(() =>
+                {
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  SalesMainSetting " +
+                                        $"where Posting = 0 " +
+                                        $"order by SalesFlag,SalesNumber ";
+                        salesMains = connection.Query<SalesMainSetting>(sql).ToList();
+                    }
+                });
+                return salesMains;
+            }
+            catch (Exception)
+            {
+                return salesMains;
+            }
+        }
         /// <summary>
         /// 銷貨父子新增
         /// </summary>
@@ -335,7 +362,42 @@ namespace ERPManagementSystem.Controllers
                 return BadRequest($"{salesSetting.SalesNumber}資訊，更新失敗");
             }
         }
-
+        /// <summary>
+        /// 更新父資料
+        /// </summary>
+        /// <param name="salesMainSetting"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("/api/Sales/UpdateSalesMain")]
+        public async Task<IActionResult> UpdateSalesMain(SalesMainSetting salesMainSetting)
+        {
+            try
+            {
+                int DateMainIndex = 0;
+                await Task.Run(() =>
+                {
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"UPDATE SalesMainSetting SET " +
+                                    $" Posting = @Posting " +
+                                    "Where SalesFlag=@SalesFlag and SalesNumber=@SalesNumber ";
+                        DateMainIndex = connection.Execute(sql, salesMainSetting);
+                    }
+                });
+                if (DateMainIndex > 0)
+                {
+                    return Ok($"{salesMainSetting.SalesNumber}資訊，更新父資料成功!");
+                }
+                else
+                {
+                    return BadRequest($"{salesMainSetting.SalesNumber}資訊，更新父資料失敗");
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest($"{salesMainSetting.SalesNumber}資訊，更新父資料失敗");
+            }
+        }
         // DELETE api/<SalesController>/5
         [HttpDelete("{SalesFlag}/{SalesNumber}")]
         public async Task<IActionResult> DeleteSales(int SalesFlag, string SalesNumber)
@@ -378,7 +440,7 @@ namespace ERPManagementSystem.Controllers
             }
         }
 
-                /// <summary>
+        /// <summary>
         /// 上傳檔案
         /// </summary>
         /// <param name="SalesFlag"></param>
@@ -389,7 +451,7 @@ namespace ERPManagementSystem.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("/api/SalesAttachmentFile")]
-        public async Task<IActionResult> PostSalesAttachmenFile(int SalesFlag,string SalesCustomerNumber, DateTime SalesDate,string SalesNumber, IFormFile AttachmentFile)
+        public async Task<IActionResult> PostSalesAttachmenFile(int SalesFlag, string SalesCustomerNumber, DateTime SalesDate, string SalesNumber, IFormFile AttachmentFile)
         {
             try
             {

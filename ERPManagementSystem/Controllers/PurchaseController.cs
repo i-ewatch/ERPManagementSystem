@@ -198,6 +198,34 @@ namespace ERPManagementSystem.Controllers
             }
         }
         /// <summary>
+        /// 查詢全部未過帳【單】【進貨】或【進貨退出】進貨父資料
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("/api/Purchase/PurchasePosting")]
+        public async Task<List<PurchaseMainSetting>> GetPurchasePosting()
+        {
+            List<PurchaseMainSetting> purchaseMains = new List<PurchaseMainSetting>();
+            try
+            {
+                await Task.Run(() =>
+                {
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  PurchaseMainSetting " +
+                                        $"where  Posting = 0 " +
+                                        $"order by PurchaseFlag,PurchaseNumber ";
+                        purchaseMains = connection.Query<PurchaseMainSetting>(sql).ToList();
+                    }
+                });
+                return purchaseMains;
+            }
+            catch (Exception)
+            {
+                return purchaseMains;
+            }
+        }
+        /// <summary>
         /// 進貨父子新增
         /// </summary>
         /// <param name="value"></param>
@@ -281,7 +309,7 @@ namespace ERPManagementSystem.Controllers
         }
 
         /// <summary>
-        /// 進貨父更新
+        /// 進貨父子更新
         /// </summary>
         // PUT api/<PurchaseController>/5
         [HttpPut]
@@ -334,7 +362,42 @@ namespace ERPManagementSystem.Controllers
                 return BadRequest($"{purchaseSetting.PurchaseNumber}資訊，更新失敗");
             }
         }
-
+        /// <summary>
+        /// 進貨父更新
+        /// </summary>
+        /// <param name="purchaseMainSetting"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("/api/Purchase/UpdatePurchaseMain")]
+        public async Task<IActionResult> UpdatePurchaseMain(PurchaseMainSetting purchaseMainSetting)
+        {
+            try
+            {
+                int DateMainIndex = 0;
+                await Task.Run(() =>
+                {
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"UPDATE PurchaseMainSetting SET " +
+                                    "Posting = @Posting " +
+                                    "Where PurchaseFlag=@PurchaseFlag and PurchaseNumber=@PurchaseNumber ";
+                        DateMainIndex = connection.Execute(sql, purchaseMainSetting);
+                    }
+                });
+                if (DateMainIndex > 0)
+                {
+                    return Ok($"{purchaseMainSetting.PurchaseNumber}資訊，更新父資料成功!");
+                }
+                else
+                {
+                    return BadRequest($"{purchaseMainSetting.PurchaseNumber}資訊，更新父資料失敗");
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest($"{purchaseMainSetting.PurchaseNumber}資訊，更新父資料失敗");
+            }          
+        }
         // DELETE api/<PurchaseController>/5
         [HttpDelete("{PurchaseFlag}/{PurchaseNumber}")]
         public async Task<IActionResult> DeletePurchase(int PurchaseFlag, string PurchaseNumber)
