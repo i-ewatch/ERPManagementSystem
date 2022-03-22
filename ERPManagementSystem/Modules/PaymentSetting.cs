@@ -46,7 +46,7 @@ namespace ERPManagementSystem.Modules
         /// <summary>
         /// 備註
         /// </summary>
-        [StringLength(100, ErrorMessage = "字串最多100個字")]
+        [StringLength(250, ErrorMessage = "字串最多250個字")]
         public string Remark { get; set; }
         /// <summary>
         /// 匯款收款日期

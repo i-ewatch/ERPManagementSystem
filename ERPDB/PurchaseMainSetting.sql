@@ -7,7 +7,7 @@
     [PurchaseTax] INT NOT NULL DEFAULT 0, 
     [PurchaseInvoiceNo] NVARCHAR(10) NULL, 
     [PurchaseEmployeeNumber] NVARCHAR(6) NOT NULL, 
-    [Remark] NVARCHAR(100) NULL, 
+    [Remark] NVARCHAR(250) NULL, 
     [Total] FLOAT NOT NULL DEFAULT 0, 
     [Tax] FLOAT NOT NULL DEFAULT 0, 
     [TotalTax] FLOAT NOT NULL DEFAULT 0, 

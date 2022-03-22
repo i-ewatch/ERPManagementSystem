@@ -7,7 +7,7 @@
     [ProductType] INT NOT NULL, 
     [ProductCategory] NVARCHAR(6) NULL, 
     [FootPrint] NVARCHAR(50) NOT NULL, 
-    [Remark] NVARCHAR(50) NULL, 
+    [Remark] NVARCHAR(250) NULL, 
     [Explanation] NVARCHAR(50) NULL, 
     [AttachmentFile] VARBINARY(MAX) NULL, 
     [FileName] NVARCHAR(50) NULL, 

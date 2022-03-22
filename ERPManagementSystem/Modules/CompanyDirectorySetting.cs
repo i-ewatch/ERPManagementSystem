@@ -46,7 +46,7 @@ namespace ERPManagementSystem.Modules
         /// <summary>
         /// 備註
         /// </summary>
-        [StringLength(50, ErrorMessage = "字串最多50個字")]
+        [StringLength(250, ErrorMessage = "字串最多250個字")]
         public string Remark { get; set; }
         /// <summary>
         /// 附件檔案
