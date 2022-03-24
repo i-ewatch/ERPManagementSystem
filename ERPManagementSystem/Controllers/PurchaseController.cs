@@ -275,8 +275,8 @@ namespace ERPManagementSystem.Controllers
                     {
                         using (IDbConnection connection = new SqlConnection(SqlDB))     // 新增父
                         {
-                            string sql = $"INSERT INTO PurchaseMainSetting(PurchaseFlag , PurchaseNumber , PurchaseDate , PurchaseCompanyNumber , PurchaseTax , PurchaseInvoiceNo , PurchaseEmployeeNumber , Remark , Total , Tax , TotalTax , Posting , FileName ) " +
-                                            $"Values(@PurchaseFlag , @PurchaseNumber , @PurchaseDate , @PurchaseCompanyNumber , @PurchaseTax , @PurchaseInvoiceNo , @PurchaseEmployeeNumber , @Remark , @Total , @Tax , @TotalTax , @Posting , @FileName)";
+                            string sql = $"INSERT INTO PurchaseMainSetting(PurchaseFlag , PurchaseNumber , PurchaseDate , PurchaseCompanyNumber , PurchaseTax , PurchaseInvoiceNo , PurchaseEmployeeNumber , Remark , Total , Tax , TotalTax , Posting , FileName , PostingDate ) " +
+                                            $"Values(@PurchaseFlag , @PurchaseNumber , @PurchaseDate , @PurchaseCompanyNumber , @PurchaseTax , @PurchaseInvoiceNo , @PurchaseEmployeeNumber , @Remark , @Total , @Tax , @TotalTax , @Posting , @FileName , @PostingDate)";
                             connection.Execute(sql, purchaseSetting);
                         }
                         using (IDbConnection connection = new SqlConnection(SqlDB))     // 新增子
@@ -327,7 +327,7 @@ namespace ERPManagementSystem.Controllers
                         {
                             string sql = $"UPDATE PurchaseMainSetting SET " +
                                         $"PurchaseDate = @PurchaseDate , PurchaseCompanyNumber = @PurchaseCompanyNumber , PurchaseTax = @PurchaseTax , PurchaseInvoiceNo= @PurchaseInvoiceNo , " +
-                                        $"PurchaseEmployeeNumber = @PurchaseEmployeeNumber , Remark = @Remark , Total  = @Total , Tax = @Tax , TotalTax = @TotalTax , Posting = @Posting , FileName = @FileName " +
+                                        $"PurchaseEmployeeNumber = @PurchaseEmployeeNumber , Remark = @Remark , Total  = @Total , Tax = @Tax , TotalTax = @TotalTax , Posting = @Posting , FileName = @FileName , PostingDate = @PostingDate " +
                                         "Where PurchaseFlag=@PurchaseFlag and PurchaseNumber=@PurchaseNumber ";
                             DateMainIndex = connection.Execute(sql, purchaseSetting);
                         }
@@ -379,7 +379,7 @@ namespace ERPManagementSystem.Controllers
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
                         string sql = $"UPDATE PurchaseMainSetting SET " +
-                                    "Posting = @Posting " +
+                                    "Posting = @Posting , PostingDate = @PostingDate " +
                                     "Where PurchaseFlag=@PurchaseFlag and PurchaseNumber=@PurchaseNumber ";
                         DateMainIndex = connection.Execute(sql, purchaseMainSetting);
                     }

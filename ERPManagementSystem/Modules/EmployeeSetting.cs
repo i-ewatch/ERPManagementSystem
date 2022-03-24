@@ -31,7 +31,7 @@ namespace ERPManagementSystem.Modules
         /// <summary>
         /// 權限
         /// </summary>
-        [Range(0, 1, ErrorMessage = "0=一般使用者，1=管理員")]
+        [Range(0, 2, ErrorMessage = "0=一般使用者，1=管理員，2=合作夥伴")]
         public int Token { get; set; }
         /// <summary>
         /// 帳號

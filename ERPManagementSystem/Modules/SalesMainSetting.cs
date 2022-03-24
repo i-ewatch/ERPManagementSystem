@@ -62,5 +62,25 @@ namespace ERPManagementSystem.Modules
         /// 附件檔名
         /// </summary>
         public string FileName { get; set; }
+        /// <summary>
+        /// 抽成
+        /// </summary>
+        public int TakeACut { get; set; }
+        /// <summary>
+        /// 成本
+        /// </summary>
+        public double Cost { get; set; }
+        /// <summary>
+        /// 分潤
+        /// </summary>
+        public double ProfitSharing { get; set; }
+        /// <summary>
+        /// 過帳日期
+        /// </summary>
+        public DateTime? PostingDate { get; set; }
+        /// <summary>
+        /// 分潤日期
+        /// </summary>
+        public DateTime? ProfitSharingDate { get; set; }
     }
 }

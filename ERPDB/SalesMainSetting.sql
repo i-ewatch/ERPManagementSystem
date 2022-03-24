@@ -13,5 +13,10 @@
     [TotalTax] FLOAT NOT NULL DEFAULT 0, 
     [Posting] INT NOT NULL DEFAULT 0, 
     [FileName] NVARCHAR(50) NULL, 
+    [TakeACut] INT NOT NULL DEFAULT 0, 
+    [Cost] FLOAT NOT NULL DEFAULT 0, 
+    [ProfitSharing] FLOAT NOT NULL DEFAULT 0, 
+    [PostingDate] DATE NULL , 
+    [ProfitSharingDate] DATE NULL, 
     CONSTRAINT [PK_SaleMainSetting] PRIMARY KEY ([SalesFlag], [SalesNumber]) 
 )

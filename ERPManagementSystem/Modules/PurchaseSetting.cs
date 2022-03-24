@@ -62,6 +62,10 @@ namespace ERPManagementSystem.Modules
         /// 附件檔名
         /// </summary>
         public string FileName { get; set; }
+        /// <summary>
+        /// 過帳日期
+        /// </summary>
+        public DateTime? PostingDate { get; set; }
         public List<PurchaseSubSetting> PurchaseSub { get; set; }
     }
 }

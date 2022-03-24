@@ -13,5 +13,6 @@
     [TotalTax] FLOAT NOT NULL DEFAULT 0, 
     [Posting] INT NOT NULL DEFAULT 0, 
     [FileName] NVARCHAR(50) NULL, 
+    [PostingDate] DATE NULL , 
     CONSTRAINT [PK_PurchaseMainSetting] PRIMARY KEY ([PurchaseFlag],[PurchaseNumber])
 )

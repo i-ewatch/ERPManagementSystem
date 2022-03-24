@@ -275,8 +275,8 @@ namespace ERPManagementSystem.Controllers
                     {
                         using (IDbConnection connection = new SqlConnection(SqlDB))     // 新增父
                         {
-                            string sql = $"INSERT INTO SalesMainSetting(SalesFlag , SalesNumber , SalesDate , SalesCustomerNumber , SalesTax , SalesInvoiceNo , SalesEmployeeNumber , Remark , Total , Tax , TotalTax , Posting , FileName ) " +
-                                            $"Values(@SalesFlag , @SalesNumber , @SalesDate , @SalesCustomerNumber , @SalesTax , @SalesInvoiceNo , @SalesEmployeeNumber , @Remark , @Total , @Tax , @TotalTax , @Posting , @FileName)";
+                            string sql = $"INSERT INTO SalesMainSetting(SalesFlag , SalesNumber , SalesDate , SalesCustomerNumber , SalesTax , SalesInvoiceNo , SalesEmployeeNumber , Remark , Total , Tax , TotalTax , Posting , FileName , TakeACut , Cost , ProfitSharing , PostingDate) " +
+                                            $"Values(@SalesFlag , @SalesNumber , @SalesDate , @SalesCustomerNumber , @SalesTax , @SalesInvoiceNo , @SalesEmployeeNumber , @Remark , @Total , @Tax , @TotalTax , @Posting , @FileName, @TakeACut , @Cost , @ProfitSharing , @PostingDate )";
                             connection.Execute(sql, salesSetting);
                         }
                         using (IDbConnection connection = new SqlConnection(SqlDB))     // 新增子
@@ -327,7 +327,7 @@ namespace ERPManagementSystem.Controllers
                         {
                             string sql = $"UPDATE SalesMainSetting SET " +
                                         $"SalesDate = @SalesDate , SalesCustomerNumber = @SalesCustomerNumber , SalesTax = @SalesTax , SalesInvoiceNo= @SalesInvoiceNo , " +
-                                        $"SalesEmployeeNumber = @SalesEmployeeNumber , Remark = @Remark , Total  = @Total , Tax = @Tax , TotalTax = @TotalTax , Posting = @Posting , FileName = @FileName " +
+                                        $"SalesEmployeeNumber = @SalesEmployeeNumber , Remark = @Remark , Total  = @Total , Tax = @Tax , TotalTax = @TotalTax , Posting = @Posting , FileName = @FileName, TakeACut = @TakeACut , Cost = @Cost , ProfitSharing = @ProfitSharing , PostingDate = @PostingDate, ProfitSharingDate = @ProfitSharingDate  " +
                                         "Where SalesFlag=@SalesFlag and SalesNumber=@SalesNumber ";
                             DateMainIndex = connection.Execute(sql, salesSetting);
                         }
@@ -379,7 +379,7 @@ namespace ERPManagementSystem.Controllers
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
                         string sql = $"UPDATE SalesMainSetting SET " +
-                                    $" Posting = @Posting " +
+                                    $" Posting = @Posting , TakeACut = @TakeACut , Cost = @Cost , ProfitSharing = @ProfitSharing , PostingDate = @PostingDate, ProfitSharingDate = @ProfitSharingDate " +
                                     "Where SalesFlag=@SalesFlag and SalesNumber=@SalesNumber ";
                         DateMainIndex = connection.Execute(sql, salesMainSetting);
                     }
