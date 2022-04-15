@@ -11,6 +11,10 @@ namespace ERPManagementSystem.Modules
         [StringLength(12, ErrorMessage = "字串最多12個字")]
         public string PaymentNumber { get; set; }
         /// <summary>
+        /// 專案代碼
+        /// </summary>
+        public string ProjectNumber { get; set; }
+        /// <summary>
         /// 日期
         /// </summary>
         public DateTime PaymentDate { get; set; }

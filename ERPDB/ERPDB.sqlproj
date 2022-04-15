@@ -75,6 +75,8 @@
     <Build Include="PickingSubSetting.sql" />
     <Build Include="ProjectSetting.sql" />
     <Build Include="ProjectEmployeeSetting.sql" />
+    <Build Include="OperatingMainSetting.sql" />
+    <Build Include="OperatingSubSetting.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="ERPDB.refactorlog" />

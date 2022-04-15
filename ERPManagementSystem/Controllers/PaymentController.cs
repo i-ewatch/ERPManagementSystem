@@ -195,8 +195,8 @@ namespace ERPManagementSystem.Controllers
                         string sql = "";
                         //if (PaymentSetting.TransferDate != null)
                         //{
-                            sql = $"INSERT INTO PaymentSetting (PaymentNumber,PaymentDate,PaymentInvoiceNo,PaymentItemNo,PaymentUse,EmployeeNumber,PaymentAmount,PaymentMethod,Remark,TransferDate )" +
-                           $" VALUES (@PaymentNumber,@PaymentDate,@PaymentInvoiceNo,@PaymentItemNo,@PaymentUse,@EmployeeNumber,@PaymentAmount,@PaymentMethod,@Remark,@TransferDate)";
+                            sql = $"INSERT INTO PaymentSetting (PaymentNumber,ProjectNumber,PaymentDate,PaymentInvoiceNo,PaymentItemNo,PaymentUse,EmployeeNumber,PaymentAmount,PaymentMethod,Remark,TransferDate )" +
+                           $" VALUES (@PaymentNumber,@ProjectNumber,@PaymentDate,@PaymentInvoiceNo,@PaymentItemNo,@PaymentUse,@EmployeeNumber,@PaymentAmount,@PaymentMethod,@Remark,@TransferDate)";
                         //}
                         //else
                         //{
@@ -235,7 +235,7 @@ namespace ERPManagementSystem.Controllers
                     using (IDbConnection connection = new SqlConnection(SqlDB))//修改
                     {
                         string sql = $"UPDATE PaymentSetting SET " +
-                        $"PaymentDate=@PaymentDate,PaymentInvoiceNo=@PaymentInvoiceNo,PaymentItemNo=@PaymentItemNo,PaymentUse=@PaymentUse,EmployeeNumber=@EmployeeNumber,PaymentAmount=@PaymentAmount,PaymentMethod=@PaymentMethod,Remark=@Remark,TransferDate=@TransferDate" +
+                        $"ProjectNumber=@ProjectNumber,PaymentDate=@PaymentDate,PaymentInvoiceNo=@PaymentInvoiceNo,PaymentItemNo=@PaymentItemNo,PaymentUse=@PaymentUse,EmployeeNumber=@EmployeeNumber,PaymentAmount=@PaymentAmount,PaymentMethod=@PaymentMethod,Remark=@Remark,TransferDate=@TransferDate" +
                         $" WHERE PaymentNumber = @PaymentNumber";
                         Index = connection.Execute(sql, PaymentSetting);
                     }

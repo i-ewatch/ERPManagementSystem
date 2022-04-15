@@ -1,6 +1,7 @@
 ﻿CREATE TABLE [dbo].[PaymentSetting]
 (
 	[PaymentNumber] NVARCHAR(12) NOT NULL PRIMARY KEY, 
+    [ProjectNumber] [nvarchar](12) NULL,
     [PaymentDate] DATE NOT NULL, 
     [PaymentInvoiceNo] NVARCHAR(10) NULL, 
     [PaymentItemNo] NVARCHAR(24) NOT NULL, 
