@@ -71,6 +71,10 @@
     <Build Include="SalesSubSetting.sql" />
     <Build Include="PaymentSetting.sql" />
     <Build Include="PaymentItemSetting.sql" />
+    <Build Include="PickingMainSetting.sql" />
+    <Build Include="PickingSubSetting.sql" />
+    <Build Include="ProjectSetting.sql" />
+    <Build Include="ProjectEmployeeSetting.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="ERPDB.refactorlog" />

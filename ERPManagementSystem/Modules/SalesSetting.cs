@@ -26,6 +26,11 @@ namespace ERPManagementSystem.Modules
         /// </summary>
         public string SalesCustomerNumber { get; set; }
         /// <summary>
+        /// 專案代碼
+        /// </summary>
+        [StringLength(12, ErrorMessage = "字串最多12個字")]
+        public string ProjectNumber { get; set; }
+        /// <summary>
         /// 稅別
         /// </summary>
         [Range(0, 4, ErrorMessage = "0.應稅，1.零稅，2.免稅，3.二聯")]

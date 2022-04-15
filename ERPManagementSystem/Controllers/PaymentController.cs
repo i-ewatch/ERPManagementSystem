@@ -132,6 +132,34 @@ namespace ERPManagementSystem.Controllers
             }
         }
         /// <summary>
+        /// 取得員工月份代墊代付
+        /// </summary>
+        /// <param name="EmployeeNumber">員工代碼</param>
+        /// <param name="MonthDate">yyyyMM</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("api/Payment/EmployeeMonthDate")]
+        public async Task<List<PaymentSetting>> GetEmployeeMonthPayment(string EmployeeNumber,string MonthDate)
+        {
+            List<PaymentSetting> paymentSettings = new List<PaymentSetting>();
+            try
+            {
+                await Task.Run(() =>
+                {
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
+                    {
+                        string sql = $"SELECT * FROM  PaymentSetting WHERE PaymentNumber >= @PaymentNumberStart AND PaymentNumber <= @PaymentNumberEnd AND EmployeeNumber = @EmployeeNumber";
+                        paymentSettings = connection.Query<PaymentSetting>(sql, new { PaymentNumberStart = MonthDate + "010000", PaymentNumberEnd = MonthDate + "319999" , EmployeeNumber}).ToList();
+                    }
+                });
+                return paymentSettings;
+            }
+            catch (Exception)
+            {
+                return paymentSettings;
+            }
+        }
+        /// <summary>
         /// 新增代墊代付
         /// </summary>
         /// <param name="PaymentSetting"></param>

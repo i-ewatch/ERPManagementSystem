@@ -4,6 +4,7 @@
     [PurchaseNumber] NVARCHAR(12) NOT NULL, 
     [PurchaseDate] DATE NOT NULL DEFAULT getdate(), 
     [PurchaseCompanyNumber] NVARCHAR(6) NOT NULL, 
+    [ProjectNumber] [nvarchar](12) NULL,
     [PurchaseTax] INT NOT NULL DEFAULT 0, 
     [PurchaseInvoiceNo] NVARCHAR(10) NULL, 
     [PurchaseEmployeeNumber] NVARCHAR(6) NOT NULL, 
@@ -16,3 +17,7 @@
     [PostingDate] DATE NULL , 
     CONSTRAINT [PK_PurchaseMainSetting] PRIMARY KEY ([PurchaseFlag],[PurchaseNumber])
 )
+
+GO
+
+CREATE INDEX [IX_PurchaseMainSetting_ProjectNumber] ON [dbo].[PurchaseMainSetting] ([ProjectNumber])

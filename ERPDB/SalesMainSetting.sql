@@ -4,6 +4,7 @@
     [SalesNumber] NVARCHAR(12) NOT NULL, 
     [SalesDate] DATE NOT NULL DEFAULT getdate(), 
     [SalesCustomerNumber] NVARCHAR(6) NOT NULL DEFAULT '', 
+    [ProjectNumber] [nvarchar](12) NULL,
     [SalesTax] INT NOT NULL DEFAULT 0, 
     [SalesInvoiceNo] NVARCHAR(10) NULL, 
     [SalesEmployeeNumber] NVARCHAR(6) NOT NULL DEFAULT '', 
@@ -20,3 +21,8 @@
     [ProfitSharingDate] DATE NULL, 
     CONSTRAINT [PK_SaleMainSetting] PRIMARY KEY ([SalesFlag], [SalesNumber]) 
 )
+
+
+GO
+
+CREATE INDEX [IX_SalesMainSetting_ProjectNumber] ON [dbo].[SalesMainSetting] ([ProjectNumber])

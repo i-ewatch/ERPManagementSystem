@@ -21,6 +21,11 @@ namespace ERPManagementSystem
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    //webBuilder.UseKestrel(opts =>
+                    //{
+                    //    opts.Listen(System.Net.IPAddress.Loopback, port: 8501);
+                    //    opts.ListenAnyIP(8502);
+                    //});
                 });
     }
 }

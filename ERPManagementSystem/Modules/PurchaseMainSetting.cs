@@ -18,6 +18,11 @@ namespace ERPManagementSystem.Modules
         /// </summary>
         public string PurchaseNumber { get; set; }
         /// <summary>
+        /// 專案代碼
+        /// </summary>
+        [StringLength(12, ErrorMessage = "字串最多12個字")]
+        public string ProjectNumber { get; set; }
+        /// <summary>
         /// 進貨日期
         /// </summary>
         public System.DateTime PurchaseDate { get; set; }

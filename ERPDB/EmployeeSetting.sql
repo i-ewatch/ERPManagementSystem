@@ -5,6 +5,6 @@
     [Phone] NVARCHAR(11) NOT NULL, 
     [Address] NVARCHAR(50) NOT NULL,
     [Token] INT NOT NULL DEFAULT 0,
-    [AccountNo] NVARCHAR(20) NOT NULL DEFAULT "", 
-    [PassWord] NVARCHAR(20) NOT NULL DEFAULT ""
+    [AccountNo] NVARCHAR(20) NOT NULL DEFAULT '', 
+    [PassWord] NVARCHAR(20) NOT NULL DEFAULT ''
 )

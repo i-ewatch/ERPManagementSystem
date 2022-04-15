@@ -6,43 +6,41 @@ using System.Threading.Tasks;
 
 namespace ERPManagementSystem.Modules
 {
-    public class SalesMainSetting
+    public class PickingMainSetting
     {
         /// <summary>
-        /// 銷貨旗標 
+        /// 領料旗標 
         /// </summary>
-        [Range(3,4,ErrorMessage ="3=銷貨，4=銷貨退回")]
-        public int SalesFlag { get; set; }
+        [Range(5, 6, ErrorMessage = "5.領料，6.領料退回")]
+        public int PickingFlag { get; set; }
         /// <summary>
-        /// 銷貨單號
+        /// 領料單號
         /// </summary>
-        public string SalesNumber { get; set; }
+        public string PickingNumber { get; set; }
         /// <summary>
-        /// 專案代碼
+        /// 領料日期
         /// </summary>
-        [StringLength(12, ErrorMessage = "字串最多12個字")]
-        public string ProjectNumber { get; set; }
-        /// <summary>
-        /// 銷貨日期
-        /// </summary>
-        public System.DateTime SalesDate { get; set; }
+        public DateTime PickingDate { get; set; }
         /// <summary>
         /// 客戶編號
         /// </summary>
-        public string SalesCustomerNumber { get; set; }
+        public string PickingCustomerNumber { get; set; }
+        /// <summary>
+        /// 專案代碼
+        /// </summary>
+        public string ProjectNumber { get; set; }
         /// <summary>
         /// 稅別
         /// </summary>
-        [Range(0, 4, ErrorMessage = "0.應稅，1.零稅，2.免稅，3.二聯")]
-        public int SalesTax { get; set; }
+        public int PickingTax { get; set; }
         /// <summary>
         /// 發票號碼
         /// </summary>
-        public string SalesInvoiceNo { get; set; }
+        public string PickingInvoiceNo { get; set; }
         /// <summary>
         /// 員工號碼
         /// </summary>
-        public string SalesEmployeeNumber { get; set; }
+        public string PickingEmployeeNumber { get; set; }
         /// <summary>
         /// 備註
         /// </summary>
