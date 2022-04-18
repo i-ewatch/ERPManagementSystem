@@ -234,7 +234,7 @@ namespace ERPManagementSystem.Controllers
                 {
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        string DeleteSql = "delete ProjectMainSetting Where ProjectNumber=@ProjectNumber";
+                        string DeleteSql = "delete ProjectSetting Where ProjectNumber=@ProjectNumber";
                         DateMainIndex = connection.Execute(DeleteSql, new { ProjectNumber = ProjectNumber });
                     }
                 });
@@ -244,7 +244,7 @@ namespace ERPManagementSystem.Controllers
                     {
                         using (IDbConnection connection = new SqlConnection(SqlDB))
                         {
-                            string DeleteSql = "delete ProjectSubSetting Where ProjectNumber=@ProjectNumber ";
+                            string DeleteSql = "delete ProjectEmployeeSetting Where ProjectNumber=@ProjectNumber ";
                             DateMainIndex = connection.Execute(DeleteSql, new { ProjectNumber = ProjectNumber});
                         }
                     });
