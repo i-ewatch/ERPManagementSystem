@@ -232,6 +232,18 @@ namespace ERPManagementSystem.Controllers
                 int DateMainIndex = 0;
                 await Task.Run(() =>
                 {
+                    WorkPath += $"\\{ProjectNumber}";
+                    if (Directory.Exists(WorkPath))
+                    {
+                        foreach (string file in Directory.GetFileSystemEntries(WorkPath))
+                        {
+                            if (System.IO.File.Exists(file))
+                            {
+                                System.IO.File.Delete(file);
+                            }
+                        }
+                        Directory.Delete(WorkPath);
+                    }
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
                         string DeleteSql = "delete ProjectSetting Where ProjectNumber=@ProjectNumber";
@@ -281,6 +293,16 @@ namespace ERPManagementSystem.Controllers
                         if (!Directory.Exists(WorkPath))
                         {
                             Directory.CreateDirectory($"{WorkPath}");
+                        }
+                        else
+                        {
+                            foreach (string file in Directory.GetFileSystemEntries(WorkPath))
+                            {
+                                if (System.IO.File.Exists(file))
+                                {
+                                    System.IO.File.Delete(file);
+                                }
+                            }
                         }
                         WorkPath += $"\\{AttachmentFile.FileName}";
                         using (var stream = new FileStream(WorkPath, FileMode.Create))

@@ -406,6 +406,18 @@ namespace ERPManagementSystem.Controllers
                 {
                     await Task.Run(() =>
                     {
+                        WorkPath += $"\\{OperatingNumber}";
+                        if (Directory.Exists(WorkPath))
+                        {
+                            foreach (string file in Directory.GetFileSystemEntries(WorkPath))
+                            {
+                                if (System.IO.File.Exists(file))
+                                {
+                                    System.IO.File.Delete(file);
+                                }
+                            }
+                            Directory.Delete(WorkPath);
+                        }
                         using (IDbConnection connection = new SqlConnection(SqlDB))
                         {
                             string DeleteSql = "delete OperatingMainSetting Where OperatingFlag=@OperatingFlag and OperatingNumber=@OperatingNumber ";
@@ -447,7 +459,7 @@ namespace ERPManagementSystem.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("/api/OperatingAttachmentFile")]
-        public async Task<IActionResult> PostOperatingAttachmenFile(int OperatingFlag, string OperatingCompanyNumber, DateTime OperatingDate, string OperatingNumber, IFormFile AttachmentFile)
+        public async Task<IActionResult> PostOperatingAttachmenFile(int OperatingFlag, DateTime OperatingDate, string OperatingNumber, IFormFile AttachmentFile)
         {
             try
             {
@@ -455,10 +467,20 @@ namespace ERPManagementSystem.Controllers
                 {
                     await Task.Run(() =>
                     {
-                        WorkPath += $"\\{OperatingCompanyNumber}";
+                        WorkPath += $"\\{OperatingNumber}";
                         if (!Directory.Exists(WorkPath))
                         {
                             Directory.CreateDirectory($"{WorkPath}");
+                        }
+                        else
+                        {
+                            foreach (string file in Directory.GetFileSystemEntries(WorkPath))
+                            {
+                                if (System.IO.File.Exists(file))
+                                {
+                                    System.IO.File.Delete(file);
+                                }
+                            }
                         }
                         WorkPath += $"\\{AttachmentFile.FileName}";
                         using (var stream = new FileStream(WorkPath, FileMode.Create))
@@ -513,19 +535,19 @@ namespace ERPManagementSystem.Controllers
         /// <summary>
         /// 下載檔案
         /// </summary>
-        /// <param name="OperatingCompanyNumber"></param>
+        /// <param name="OperatingNumber"></param>
         /// <param name="AttachmentFile"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("/api/OperatingAttachmentFile")]
-        public async Task<IActionResult> GetOperatingAttachmenFile(string OperatingCompanyNumber, string AttachmentFile)
+        public async Task<IActionResult> GetOperatingAttachmenFile(string OperatingNumber, string AttachmentFile)
         {
             try
             {
-                if (!string.IsNullOrEmpty(OperatingCompanyNumber) && !string.IsNullOrEmpty(AttachmentFile))
+                if (!string.IsNullOrEmpty(OperatingNumber) && !string.IsNullOrEmpty(AttachmentFile))
                 {
                     string FileExtension = AttachmentFile.Split('.')[1];
-                    WorkPath += $"\\{OperatingCompanyNumber}\\{AttachmentFile}";
+                    WorkPath += $"\\{OperatingNumber}\\{AttachmentFile}";
                     if (System.IO.File.Exists(WorkPath))
                     {
                         var memoryStream = new MemoryStream();

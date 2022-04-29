@@ -204,6 +204,18 @@ namespace ERPManagementSystem.Controllers
                 int DateIndex = 0;
                 await Task.Run(() =>
                 {
+                    WorkPath += $"\\{customerSetting.CustomerNumber}";
+                    if (Directory.Exists(WorkPath))
+                    {
+                        foreach (string file in Directory.GetFileSystemEntries(WorkPath))
+                        {
+                            if (System.IO.File.Exists(file))
+                            {
+                                System.IO.File.Delete(file);
+                            }
+                        }
+                        Directory.Delete(WorkPath);
+                    }
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
                         string sql = $"DELETE FROM {CustomerLog} WHERE CustomerNumber = @CustomerNumber";
@@ -248,6 +260,16 @@ namespace ERPManagementSystem.Controllers
                         if (!Directory.Exists(WorkPath))
                         {
                             Directory.CreateDirectory($"{WorkPath}");
+                        }
+                        else
+                        {
+                            foreach (string file in Directory.GetFileSystemEntries(WorkPath))
+                            {
+                                if (System.IO.File.Exists(file))
+                                {
+                                    System.IO.File.Delete(file);
+                                }
+                            }
                         }
                         WorkPath += $"\\{AttachmentFile.FileName}";
                         using (var stream = new FileStream(WorkPath, FileMode.Create))
@@ -297,7 +319,7 @@ namespace ERPManagementSystem.Controllers
             }
         }
         /// <summary>
-        /// 客戶附件檔案更新
+        /// 客戶附件檔案下載
         /// </summary>
         /// <param name="CustomerNumber">客戶編碼</param>
         /// <param name="CustomerName">客戶名稱</param>

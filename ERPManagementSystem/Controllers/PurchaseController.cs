@@ -10,7 +10,6 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Transactions;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -409,6 +408,18 @@ namespace ERPManagementSystem.Controllers
                 {
                     await Task.Run(() =>
                     {
+                        WorkPath += $"\\{PurchaseNumber}";
+                        if (Directory.Exists(WorkPath))
+                        {
+                            foreach (string file in Directory.GetFileSystemEntries(WorkPath))
+                            {
+                                if (System.IO.File.Exists(file))
+                                {
+                                    System.IO.File.Delete(file);
+                                }
+                            }
+                            Directory.Delete(WorkPath);
+                        }
                         using (IDbConnection connection = new SqlConnection(SqlDB))
                         {
                             string DeleteSql = "delete PurchaseMainSetting Where PurchaseFlag=@PurchaseFlag and PurchaseNumber=@PurchaseNumber ";
@@ -450,7 +461,7 @@ namespace ERPManagementSystem.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("/api/PurchaseAttachmentFile")]
-        public async Task<IActionResult> PostPurchaseAttachmenFile(int PurchaseFlag,string PurchaseCompanyNumber, DateTime PurchaseDate,string PurchaseNumber, IFormFile AttachmentFile)
+        public async Task<IActionResult> PostPurchaseAttachmenFile(int PurchaseFlag, DateTime PurchaseDate,string PurchaseNumber, IFormFile AttachmentFile)
         {
             try
             {
@@ -458,10 +469,20 @@ namespace ERPManagementSystem.Controllers
                 {
                     await Task.Run(() =>
                     {
-                        WorkPath += $"\\{PurchaseCompanyNumber}";
+                        WorkPath += $"\\{PurchaseNumber}";
                         if (!Directory.Exists(WorkPath))
                         {
                             Directory.CreateDirectory($"{WorkPath}");
+                        }
+                        else
+                        {
+                            foreach (string file in Directory.GetFileSystemEntries(WorkPath))
+                            {
+                                if (System.IO.File.Exists(file))
+                                {
+                                    System.IO.File.Delete(file);
+                                }
+                            }
                         }
                         WorkPath += $"\\{AttachmentFile.FileName}";
                         using (var stream = new FileStream(WorkPath, FileMode.Create))
@@ -516,19 +537,19 @@ namespace ERPManagementSystem.Controllers
         /// <summary>
         /// 下載檔案
         /// </summary>
-        /// <param name="PurchaseCompanyNumber"></param>
+        /// <param name="PurchaseNumber"></param>
         /// <param name="AttachmentFile"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("/api/PurchaseAttachmentFile")]
-        public async Task<IActionResult> GetPurchaseAttachmenFile(string PurchaseCompanyNumber, string AttachmentFile)
+        public async Task<IActionResult> GetPurchaseAttachmenFile(string PurchaseNumber, string AttachmentFile)
         {
             try
             {
-                if (!string.IsNullOrEmpty(PurchaseCompanyNumber) && !string.IsNullOrEmpty(AttachmentFile))
+                if (!string.IsNullOrEmpty(PurchaseNumber) && !string.IsNullOrEmpty(AttachmentFile))
                 {
                     string FileExtension = AttachmentFile.Split('.')[1];
-                    WorkPath += $"\\{PurchaseCompanyNumber}\\{AttachmentFile}";
+                    WorkPath += $"\\{PurchaseNumber}\\{AttachmentFile}";
                     if (System.IO.File.Exists(WorkPath))
                     {
                         var memoryStream = new MemoryStream();

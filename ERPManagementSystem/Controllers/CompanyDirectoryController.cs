@@ -225,6 +225,18 @@ namespace ERPManagementSystem.Controllers
                 int DateIndex = 0;
                 await Task.Run(() =>
                 {
+                    WorkPath += $"\\{companyDirectorySetting.DirectoryCompany}";
+                    if (Directory.Exists(WorkPath))
+                    {
+                        foreach (string file in Directory.GetFileSystemEntries(WorkPath))
+                        {
+                            if (System.IO.File.Exists(file))
+                            {
+                                System.IO.File.Delete(file);
+                            }
+                        }
+                        Directory.Delete(WorkPath);
+                    }
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
                         string sql = $"DELETE FROM {CompanyDirectoryLog} WHERE DirectoryCompany = @DirectoryCompany AND DirectoryNumber = @DirectoryNumber";
@@ -270,6 +282,16 @@ namespace ERPManagementSystem.Controllers
                         if (!Directory.Exists(WorkPath))
                         {
                             Directory.CreateDirectory($"{WorkPath}");
+                        }
+                        else
+                        {
+                            foreach (string file in Directory.GetFileSystemEntries(WorkPath))
+                            {
+                                if (System.IO.File.Exists(file))
+                                {
+                                    System.IO.File.Delete(file);
+                                }
+                            }
                         }
                         WorkPath += $"\\{AttachmentFile.FileName}";
                         using (var stream = new FileStream(WorkPath, FileMode.Create))

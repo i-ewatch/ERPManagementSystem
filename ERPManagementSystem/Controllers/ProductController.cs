@@ -277,6 +277,16 @@ namespace ERPManagementSystem.Controllers
                         {
                             Directory.CreateDirectory($"{WorkPath}");
                         }
+                        else
+                        {
+                            foreach (string file in Directory.GetFileSystemEntries(WorkPath))
+                            {
+                                if (System.IO.File.Exists(file))
+                                {
+                                    System.IO.File.Delete(file);
+                                }
+                            }
+                        }
                         WorkPath += $"\\{AttachmentFile.FileName}";
                         using (var stream = new FileStream(WorkPath, FileMode.Create))
                         {
