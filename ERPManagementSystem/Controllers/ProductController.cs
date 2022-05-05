@@ -125,46 +125,39 @@ namespace ERPManagementSystem.Controllers
                 {
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        string sql = $"SELECT * FROM  {ProductLog} WHERE ProductNumber = @ProductNumber";
+                        string sql = $"SELECT * FROM  {ProductLog} WHERE ProductNumber Like CONCAT(@ProductNumber,'%')";
                         companySettings = connection.Query<CompanySetting>(sql, new { ProductNumber = productSetting.ProductNumber }).ToList();
                     }
                 });
-                if (companySettings.Count == 0)
+                int DateIndex = 0;
+                await Task.Run(() =>
                 {
-                    int DateIndex = 0;
-                    await Task.Run(() =>
+                    using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        using (IDbConnection connection = new SqlConnection(SqlDB))
+                        string sql = $"INSERT INTO {ProductLog}(ProductNumber , ProductName , ProductModel , ProductType , ProductCategory , FootPrint , Remark , Explanation , ProductCompanyNumber) VALUES " +
+                            $"(@ProductNumber,@ProductName,@ProductModel,@ProductType,@ProductCategory,@FootPrint,@Remark,@Explanation" +
+                            $",@ProductCompanyNumber)";
+                        DateIndex = connection.Execute(sql, new
                         {
-                            string sql = $"INSERT INTO {ProductLog}(ProductNumber , ProductName , ProductModel , ProductType , ProductCategory , FootPrint , Remark , Explanation , ProductCompanyNumber) VALUES " +
-                                $"(@ProductNumber,@ProductName,@ProductModel,@ProductType,@ProductCategory,@FootPrint,@Remark,@Explanation" +
-                                $",@ProductCompanyNumber)";
-                            DateIndex = connection.Execute(sql, new
-                            {
-                                ProductNumber = productSetting.ProductNumber,
-                                ProductName = productSetting.ProductName,
-                                ProductModel = productSetting.ProductModel,
-                                ProductType = productSetting.ProductType,
-                                ProductCategory = productSetting.ProductCategory,
-                                FootPrint = productSetting.FootPrint,
-                                Remark = productSetting.Remark,
-                                Explanation = productSetting.Explanation,
-                                ProductCompanyNumber = productSetting.ProductCompanyNumber
-                            });
-                        }
-                    });
-                    if (DateIndex > 0)
-                    {
-                        return Ok($"{productSetting.ProductName}資訊，上傳成功!");
+                            ProductNumber = productSetting.ProductNumber+ (companySettings.Count().ToString()).PadLeft(4,'0'),
+                            ProductName = productSetting.ProductName,
+                            ProductModel = productSetting.ProductModel,
+                            ProductType = productSetting.ProductType,
+                            ProductCategory = productSetting.ProductCategory,
+                            FootPrint = productSetting.FootPrint,
+                            Remark = productSetting.Remark,
+                            Explanation = productSetting.Explanation,
+                            ProductCompanyNumber = productSetting.ProductCompanyNumber
+                        });
                     }
-                    else
-                    {
-                        return BadRequest($"{productSetting.ProductName}資訊，上傳失敗");
-                    }
+                });
+                if (DateIndex > 0)
+                {
+                    return Ok($"{productSetting.ProductName}資訊，上傳成功!");
                 }
                 else
                 {
-                    return BadRequest($"{productSetting.ProductName}資訊，編碼已存在");
+                    return BadRequest($"{productSetting.ProductName}資訊，上傳失敗");
                 }
             }
             catch (Exception)
