@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using ERPManagementSystem.Modules;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -185,6 +186,7 @@ namespace ERPManagementSystem.Controllers
         /// <param name="employeeSetting"></param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         [Route("/api/EmployeeLogin")]
         public async Task<List<EmployeeSetting>> LoginEmployee(string Account, string PassWord)
         {

@@ -116,7 +116,7 @@ namespace ERPManagementSystem.Controllers
         /// <param name="productSetting">產品資訊物件</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> PostProduct(ProductSetting productSetting)
+        public async Task<ProductSetting> PostProduct(ProductSetting productSetting)
         {
             try
             {
@@ -153,17 +153,18 @@ namespace ERPManagementSystem.Controllers
                 });
                 if (DateIndex > 0)
                 {
-                    return Ok($"{productSetting.ProductName}資訊，上傳成功!");
+                    productSetting.ProductNumber = productSetting.ProductNumber + (companySettings.Count().ToString()).PadLeft(4, '0');
+                    return productSetting;
                 }
                 else
                 {
-                    return BadRequest($"{productSetting.ProductName}資訊，上傳失敗");
+                    return null;
                 }
             }
             catch (Exception)
             {
 
-                return BadRequest($"{productSetting.ProductName}資訊，上傳失敗");
+                return null;
             }
         }
         /// <summary>
