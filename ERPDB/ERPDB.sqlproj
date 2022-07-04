@@ -84,6 +84,8 @@
     <Build Include="ProductItem3Setting.sql" />
     <Build Include="ProductItem4Setting.sql" />
     <Build Include="ProductItem5Setting.sql" />
+    <Build Include="OrderMainSetting.sql" />
+    <Build Include="OrderSubSetting.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="ERPDB.refactorlog" />
