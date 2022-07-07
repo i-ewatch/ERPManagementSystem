@@ -27,11 +27,11 @@ namespace ERPManagementSystem.Controllers
             SqlDB = _configuration["SqlDB"];
         }
         /// <summary>
-        /// 取得全部代墊代付
+        /// 取得單一代墊代付
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
-        public async Task<List<PaymentSetting>> GetPayment()
+        [HttpGet("{PaymentNumber}")]
+        public async Task<List<PaymentSetting>> GetPayment(string PaymentNumber)
         {
             List<PaymentSetting> paymentSettings = new List<PaymentSetting>();
             try
@@ -40,8 +40,8 @@ namespace ERPManagementSystem.Controllers
                 {
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
-                        string sql = $"SELECT * FROM  PaymentSetting";
-                        paymentSettings = connection.Query<PaymentSetting>(sql).ToList();
+                        string sql = $"SELECT * FROM  PaymentSetting WHERE PaymentNumber = @PaymentNumber";
+                        paymentSettings = connection.Query<PaymentSetting>(sql, new { PaymentNumber }).ToList();
                     }
                 });
                 return paymentSettings;
@@ -68,6 +68,30 @@ namespace ERPManagementSystem.Controllers
                     {
                         string sql = $"SELECT * FROM  PaymentSetting WHERE TransferDate IS NULL";
                         paymentSettings = connection.Query<PaymentSetting>(sql).ToList();
+                        string paymentitem = $"SELECT * FROM  PaymentItemSetting";
+                        var PaymentItem = connection.Query<PaymentItemSetting>(paymentitem).ToList();
+                        string project = "SELECT * FROM ProjectSetting";
+                        var Project = connection.Query<ProjectSetting>(project).ToList();
+                        string employee = "SELECT * FROM EmployeeSetting";
+                        var Employee = connection.Query<EmployeeSetting>(employee).ToList();
+                        foreach (var item in paymentSettings)
+                        {
+                            var paymentitemdata = PaymentItem.SingleOrDefault(g => g.PaymentItemNo == item.PaymentItemNo);
+                            var projectdata = Project.SingleOrDefault(g => g.ProjectNumber == item.ProjectNumber);
+                            var employeedata = Employee.SingleOrDefault(g => g.EmployeeNumber == item.EmployeeNumber);
+                            if (paymentitemdata != null)
+                            {
+                                item.PaymentItemNo = paymentitemdata.PaymentItemName;
+                            }
+                            if (projectdata != null)
+                            {
+                                item.ProjectNumber = projectdata.ProjectName;
+                            }
+                            if (employeedata != null)
+                            {
+                                item.EmployeeNumber = employeedata.EmployeeName;
+                            }
+                        }
                     }
                 });
                 return paymentSettings;
@@ -122,6 +146,30 @@ namespace ERPManagementSystem.Controllers
                     {
                         string sql = $"SELECT * FROM  PaymentSetting WHERE PaymentNumber >= @PaymentNumberStart AND PaymentNumber <= @PaymentNumberEnd";
                         paymentSettings = connection.Query<PaymentSetting>(sql, new { PaymentNumberStart = MonthDate + "010000", PaymentNumberEnd = MonthDate + "319999" }).ToList();
+                        string paymentitem = $"SELECT * FROM  PaymentItemSetting";
+                        var PaymentItem = connection.Query<PaymentItemSetting>(paymentitem).ToList();
+                        string project = "SELECT * FROM ProjectSetting";
+                        var Project = connection.Query<ProjectSetting>(project).ToList();
+                        string employee = "SELECT * FROM EmployeeSetting";
+                        var Employee = connection.Query<EmployeeSetting>(employee).ToList();
+                        foreach (var item in paymentSettings)
+                        {
+                            var paymentitemdata = PaymentItem.SingleOrDefault(g => g.PaymentItemNo == item.PaymentItemNo);
+                            var projectdata = Project.SingleOrDefault(g => g.ProjectNumber == item.ProjectNumber);
+                            var employeedata = Employee.SingleOrDefault(g => g.EmployeeNumber == item.EmployeeNumber);
+                            if (paymentitemdata != null)
+                            {
+                                item.PaymentItemNo = paymentitemdata.PaymentItemName;
+                            }
+                            if (projectdata != null)
+                            {
+                                item.ProjectNumber = projectdata.ProjectName;
+                            }
+                            if (employeedata != null)
+                            {
+                                item.EmployeeNumber = employeedata.EmployeeName;
+                            }
+                        }
                     }
                 });
                 return paymentSettings;

@@ -90,6 +90,38 @@ namespace ERPManagementSystem.Controllers
                                         $"where LEFT(OrderNumber,4) = @Year " +
                                         $"order by OrderNumber ";
                         OrderMains = connection.Query<OrderMainSetting>(sql, new { Year }).ToList();
+
+                        string company = "SELECT * FROM CompanySetting";
+                        var Company = connection.Query<CompanySetting>(company).ToList();
+                        string companydirectory = "SELECT * FROM CompanyDirectorySetting";
+                        var CompanyDirectory = connection.Query<CompanyDirectorySetting>(companydirectory).ToList();
+                        string project = "SELECT * FROM ProjectSetting";
+                        var Project = connection.Query<ProjectSetting>(project).ToList();
+                        string employee = "SELECT * FROM EmployeeSetting";
+                        var Employee = connection.Query<EmployeeSetting>(employee).ToList();
+                        foreach (var item in OrderMains)
+                        {
+                            var companydata = Company.SingleOrDefault(g => g.CompanyNumber == item.OrderCompanyNumber);
+                            var companydirectorydata = CompanyDirectory.SingleOrDefault(g => g.DirectoryCompany == item.OrderCompanyNumber & g.DirectoryNumber == item.OrderDirectoryNumber);
+                            var projectdata = Project.SingleOrDefault(g => g.ProjectNumber == item.ProjectNumber);
+                            var employeedata = Employee.SingleOrDefault(g => g.EmployeeNumber == item.OrderEmployeeNumber);
+                            if (companydata != null)
+                            {
+                                item.OrderCompanyNumber = companydata.CompanyName;
+                            }
+                            if (companydirectorydata != null)
+                            {
+                                item.OrderDirectoryNumber = companydirectorydata.DirectoryName;
+                            }
+                            if (projectdata != null)
+                            {
+                                item.ProjectNumber = projectdata.ProjectName;
+                            }
+                            if (employeedata!= null)
+                            {
+                                item.OrderEmployeeNumber = employeedata.EmployeeName;
+                            }
+                        }
                     }
                 });
                 return OrderMains;
