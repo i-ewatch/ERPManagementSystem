@@ -29,7 +29,7 @@ namespace ERPManagementSystem.Controllers
         /// <summary>
         /// 查詢單筆訂購單父子資料
         /// </summary>
-        /// <param name="OrderNumber">進貨單號</param>
+        /// <param name="OrderNumber">訂購單號</param>
         /// <returns></returns>
         [HttpGet("{OrderNumber}")]
         public async Task<List<OrderSetting>> GetOrder(string OrderNumber)
@@ -155,11 +155,11 @@ namespace ERPManagementSystem.Controllers
                     }
                     if (CheckOrderNumber.Count == 0)
                     {
-                        ResultOrderNumber = orderSetting.OrderDate.ToString("yyyyMMdd") + "0001";     // 當天無進貨，由 0001開始
+                        ResultOrderNumber = orderSetting.OrderDate.ToString("yyyyMMdd") + "0001";     // 當天無訂購，由 0001開始
                     }
                     else
                     {
-                        ResultOrderNumber = orderSetting.OrderDate.ToString("yyyyMMdd") + (Convert.ToInt32(CheckOrderNumber[0].OrderNumber.Substring(8, 4)) + 1).ToString().PadLeft(4, '0');     // 當天最後一筆進貨單號+1
+                        ResultOrderNumber = orderSetting.OrderDate.ToString("yyyyMMdd") + (Convert.ToInt32(CheckOrderNumber[0].OrderNumber.Substring(8, 4)) + 1).ToString().PadLeft(4, '0');     // 當天最後一筆訂購單號+1
                     }
                     orderSetting.OrderNumber = ResultOrderNumber;
                     double mTotal = 0;
@@ -179,8 +179,8 @@ namespace ERPManagementSystem.Controllers
                     {
                         using (IDbConnection connection = new SqlConnection(SqlDB))     // 新增父
                         {
-                            string sql = $"INSERT INTO OrderMainSetting(OrderNumber , ProjectNumber , OrderDate , OrderCompanyNumber , OrderDirectoryNumber ,Address , OrderEmployeeNumber , Remark , Total , Tax , TotalTax , TotalQty , FileName , OrderNote,InvalidFlag ) " +
-                                            $"Values( @OrderNumber, @ProjectNumber , @OrderDate , @OrderCompanyNumber ,@OrderDirectoryNumber ,@Address , @OrderEmployeeNumber , @Remark , @Total , @Tax , @TotalTax , @TotalQty , @FileName , @OrderNote,@InvalidFlag)";
+                            string sql = $"INSERT INTO OrderMainSetting(OrderNumber , ProjectNumber , OrderDate , OrderCompanyNumber , OrderDirectoryNumber ,Address , OrderEmployeeNumber , Remark ,OrderTax , Total , Tax , TotalTax , TotalQty , FileName , OrderNote,InvalidFlag ) " +
+                                            $"Values( @OrderNumber, @ProjectNumber , @OrderDate , @OrderCompanyNumber ,@OrderDirectoryNumber ,@Address , @OrderEmployeeNumber , @Remark ,@OrderTax, @Total , @Tax , @TotalTax , @TotalQty , @FileName , @OrderNote,@InvalidFlag)";
                             connection.Execute(sql, orderSetting);
                         }
                         using (IDbConnection connection = new SqlConnection(SqlDB))     // 新增子
@@ -230,7 +230,7 @@ namespace ERPManagementSystem.Controllers
                         {
                             string sql = $"UPDATE OrderMainSetting SET " +
                                         $"OrderDate = @OrderDate , OrderCompanyNumber = @OrderCompanyNumber , ProjectNumber = @ProjectNumber ," +
-                                        $"OrderEmployeeNumber = @OrderEmployeeNumber , Remark = @Remark , Total  = @Total , Tax = @Tax , TotalTax = @TotalTax , TotalQty = @TotalQty , FileName = @FileName , OrderNote = @OrderNote ,InvalidFlag = @InvalidFlag " +
+                                        $"OrderEmployeeNumber = @OrderEmployeeNumber , Remark = @Remark , OrderTax = @OrderTax,Total  = @Total , Tax = @Tax , TotalTax = @TotalTax , TotalQty = @TotalQty , FileName = @FileName , OrderNote = @OrderNote ,InvalidFlag = @InvalidFlag " +
                                         "Where  OrderNumber=@OrderNumber ";
                             DateMainIndex = connection.Execute(sql, orderSetting);
                         }
@@ -374,11 +374,11 @@ namespace ERPManagementSystem.Controllers
                             }
                             if (CheckOrderNumber.Count == 0)
                             {
-                                ResultOrderNumber = OrderDate.ToString("yyyyMMdd") + "0001";     // 當天無進貨，由 0001開始
+                                ResultOrderNumber = OrderDate.ToString("yyyyMMdd") + "0001";     // 當天無訂購，由 0001開始
                             }
                             else
                             {
-                                ResultOrderNumber = OrderDate.ToString("yyyyMMdd") + (Convert.ToInt32(CheckOrderNumber[0].OrderNumber.Substring(8, 4)) + 1).ToString().PadLeft(4, '0');     // 當天最後一筆進貨單號+1
+                                ResultOrderNumber = OrderDate.ToString("yyyyMMdd") + (Convert.ToInt32(CheckOrderNumber[0].OrderNumber.Substring(8, 4)) + 1).ToString().PadLeft(4, '0');     // 當天最後一筆訂購單號+1
                             }
                             OrderNumber = ResultOrderNumber;
                         }

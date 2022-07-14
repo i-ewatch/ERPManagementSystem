@@ -44,6 +44,16 @@ namespace ERPManagementSystem.Controllers
                     {
                         string sql = $"SELECT * FROM  {ProductLog} order by ProductNumber ";
                         productSettings = connection.Query<ProductSetting>(sql).ToList();
+                        string company = "SELECT * FROM CompanySetting";
+                        var Company = connection.Query<CompanySetting>(company).ToList();
+                        foreach (var item in productSettings)
+                        {
+                            var companydata = Company.SingleOrDefault(g => g.CompanyNumber == item.ProductCompanyNumber);
+                            if (companydata != null)
+                            {
+                                item.ProductCompanyNumber = companydata.CompanyName;
+                            }
+                        }
                     }
                 });
                 return productSettings;

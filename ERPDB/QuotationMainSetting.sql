@@ -1,19 +1,19 @@
-﻿CREATE TABLE [dbo].[OrderMainSetting]
+﻿CREATE TABLE [dbo].[QuotationMainSetting]
 (
-	[OrderNumber] NVARCHAR(12) NOT NULL PRIMARY KEY, 
-    [OrderDate] DATETIME NOT NULL, 
-    [OrderCompanyNumber] NVARCHAR(6) NOT NULL,
-    [OrderDirectoryNumber] NVARCHAR(6) NOT NULL,
+	[QuotationNumber] NVARCHAR(12) NOT NULL PRIMARY KEY, 
+    [QuotationDate] DATETIME NOT NULL, 
+    [QuotationCustomerNumber] NVARCHAR(6) NOT NULL,
+    [QuotationDirectoryNumber] NVARCHAR(6) NOT NULL,
     [Address]  NVARCHAR(50) NULL DEFAULT '',
     [ProjectNumber] NVARCHAR(12) NULL DEFAULT '', 
-    [OrderEmployeeNumber] NVARCHAR(6) NOT NULL, 
+    [QuotationEmployeeNumber] NVARCHAR(6) NOT NULL, 
     [Remark] NVARCHAR(250) NULL DEFAULT '',
-    [OrderTax] INT NULL DEFAULT 0,
+    [QuotationTax] INT NULL DEFAULT 0,
     [Total] FLOAT NOT NULL DEFAULT 0, 
     [Tax] FLOAT NOT NULL DEFAULT 0, 
     [TotalTax] FLOAT NOT NULL DEFAULT 0, 
     [TotalQty] FLOAT NOT NULL DEFAULT 0, 
     [FileName] NVARCHAR(50) NULL, 
-    [OrderNote] NVARCHAR(50) NULL, 
+    [QuotationNote] NVARCHAR(50) NULL, 
     [InvalidFlag] BIT NOT NULL DEFAULT 0
 )

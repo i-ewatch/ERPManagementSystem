@@ -3,11 +3,11 @@
     public class OrderSubSetting
     {
         /// <summary>
-        /// 銷貨單號
+        /// 訂單單號
         /// </summary>
         public string OrderNumber { get; set; }
         /// <summary>
-        /// 銷貨明細序號
+        /// 訂單明細序號
         /// </summary>
         public int OrderNo { get; set; }
         /// <summary>
