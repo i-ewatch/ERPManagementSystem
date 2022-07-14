@@ -130,13 +130,13 @@ namespace ERPManagementSystem.Controllers
         {
             try
             {
-                List<CompanySetting> companySettings = new List<CompanySetting>();
+                List<ProductSetting> ProductSettings = new List<ProductSetting>();
                 await Task.Run(() =>
                 {
                     using (IDbConnection connection = new SqlConnection(SqlDB))
                     {
                         string sql = $"SELECT * FROM  {ProductLog} WHERE ProductNumber Like CONCAT(@ProductNumber,'%')";
-                        companySettings = connection.Query<CompanySetting>(sql, new { ProductNumber = productSetting.ProductNumber }).ToList();
+                        ProductSettings = connection.Query<ProductSetting>(sql, new { ProductNumber = productSetting.ProductNumber }).ToList();
                     }
                 });
                 int DateIndex = 0;
@@ -147,9 +147,18 @@ namespace ERPManagementSystem.Controllers
                         string sql = $"INSERT INTO {ProductLog}(ProductNumber , ProductName , ProductModel , ProductType , ProductCategory , FootPrint , Remark , Explanation , ProductCompanyNumber) VALUES " +
                             $"(@ProductNumber,@ProductName,@ProductModel,@ProductType,@ProductCategory,@FootPrint,@Remark,@Explanation" +
                             $",@ProductCompanyNumber)";
+                        int ProductIndex = 0;
+                        foreach (var item in ProductSettings)
+                        {
+                            if (productSetting.ProductNumber + (ProductSettings.Count().ToString()).PadLeft(4, '0') == item.ProductNumber)
+                            {
+                                ProductIndex = ProductSettings.Count() + 1;
+                                break;
+                            }
+                        }
                         DateIndex = connection.Execute(sql, new
                         {
-                            ProductNumber = productSetting.ProductNumber+ (companySettings.Count().ToString()).PadLeft(4,'0'),
+                            ProductNumber = productSetting.ProductNumber + (ProductIndex.ToString()).PadLeft(4, '0'),
                             ProductName = productSetting.ProductName,
                             ProductModel = productSetting.ProductModel,
                             ProductType = productSetting.ProductType,
@@ -163,7 +172,7 @@ namespace ERPManagementSystem.Controllers
                 });
                 if (DateIndex > 0)
                 {
-                    productSetting.ProductNumber = productSetting.ProductNumber + (companySettings.Count().ToString()).PadLeft(4, '0');
+                    productSetting.ProductNumber = productSetting.ProductNumber + (ProductSettings.Count().ToString()).PadLeft(4, '0');
                     return productSetting;
                 }
                 else

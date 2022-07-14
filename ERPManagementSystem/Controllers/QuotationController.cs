@@ -384,7 +384,7 @@ namespace ERPManagementSystem.Controllers
                         }
                         using (IDbConnection connection = new SqlConnection(SqlDB))
                         {
-                            string sql = $"UPDATE QuotationMainSetting SET FileName = @FileName  WHERE  and QuotationNumber=@QuotationNumber";
+                            string sql = $"UPDATE QuotationMainSetting SET FileName = @FileName  WHERE  QuotationNumber=@QuotationNumber";
                             connection.Execute(sql, new { FileName = AttachmentFile.FileName, QuotationNumber = QuotationNumber });
                         }
                     });

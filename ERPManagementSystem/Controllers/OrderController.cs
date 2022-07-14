@@ -117,7 +117,7 @@ namespace ERPManagementSystem.Controllers
                             {
                                 item.ProjectNumber = projectdata.ProjectName;
                             }
-                            if (employeedata!= null)
+                            if (employeedata != null)
                             {
                                 item.OrderEmployeeNumber = employeedata.EmployeeName;
                             }
@@ -384,7 +384,7 @@ namespace ERPManagementSystem.Controllers
                         }
                         using (IDbConnection connection = new SqlConnection(SqlDB))
                         {
-                            string sql = $"UPDATE OrderMainSetting SET FileName = @FileName  WHERE  and OrderNumber=@OrderNumber";
+                            string sql = $"UPDATE OrderMainSetting SET FileName = @FileName  WHERE  OrderNumber=@OrderNumber";
                             connection.Execute(sql, new { FileName = AttachmentFile.FileName, OrderNumber = OrderNumber });
                         }
                     });
